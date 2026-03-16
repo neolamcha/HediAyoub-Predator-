@@ -1,44 +1,70 @@
 import streamlit as st
 
 # ==========================================
-# 1. CONFIGURATION & STYLE RADICAL
+# 1. CONFIGURATION & DESIGN TOTAL BLACK
 # ==========================================
 st.set_page_config(page_title="THE PREDATOR", layout="wide")
 
 st.markdown("""
     <style>
-        /* Fond global noir */
-        .stApp { background-color: #000000; color: #FFFFFF; font-family: 'Courier New', monospace; }
-        
-        /* --- HACK DU CARRÉ BLANC (UPLOADER) --- */
-        section[data-testid="stFileUploadDropzone"] {
-            background-color: #050505 !important; /* Noir profond */
-            border: 2px dashed #FF3131 !important; /* Bordure rouge Predator */
-            color: #FFFFFF !important;
-        }
-        
-        /* Cacher le texte gris inutile dans le carré */
-        section[data-testid="stFileUploadDropzone"] div div { color: #555 !important; }
-        
-        /* Bouton à l'intérieur du carré */
-        section[data-testid="stFileUploadDropzone"] button {
-            background-color: #111 !important;
-            color: #FF3131 !important;
-            border: 1px solid #FF3131 !important;
+        /* Fond global noir absolu */
+        .stApp, [data-testid="stAppViewContainer"] { 
+            background-color: #000000 !important; 
+            color: #FFFFFF !important; 
         }
 
-        /* Inputs et Selectboxes */
-        div[data-baseweb="select"] > div { background-color: #0A0A0A !important; border: 1px solid #333 !important; }
-        div[data-baseweb="base-input"] { background-color: #0A0A0A !important; border: 1px solid #333 !important; }
+        /* 1. FIX EXPANDER (Le titre "Capture Haute Résolution" qui était blanc) */
+        .streamlit-expanderHeader {
+            background-color: #000000 !important;
+            color: #FF3131 !important;
+            border: 1px solid #222 !important;
+        }
+        .streamlit-expanderContent {
+            background-color: #000000 !important;
+            border: 1px solid #222 !important;
+        }
+
+        /* 2. FIX UPLOADER (Le gros carré Drag & Drop) */
+        [data-testid="stFileUploadDropzone"] {
+            background-color: #050505 !important;
+            border: 2px dashed #FF3131 !important;
+        }
+        [data-testid="stFileUploadDropzone"] p, [data-testid="stFileUploadDropzone"] small {
+            color: #444 !important; /* Rend le texte "Limit 200MB" presque invisible */
+        }
+
+        /* 3. FIX BOUTON INTERNE (Le bouton "Browse files") */
+        [data-testid="stFileUploadDropzone"] button {
+            background-color: #FF3131 !important;
+            color: black !important;
+            border: none !important;
+        }
+
+        /* 4. FIX INPUTS (Cases NASDAQ, 15M, etc.) */
+        div[data-baseweb="select"] > div { 
+            background-color: #0A0A0A !important; 
+            border: 1px solid #FF3131 !important; 
+            color: white !important; 
+        }
         
-        /* Titres */
-        .main-title { color: #FF3131; text-transform: uppercase; font-size: 28px; font-weight: bold; text-align: center; text-shadow: 0 0 10px #FF3131; }
-        .brand-text { color: #444; text-transform: uppercase; font-size: 10px; letter-spacing: 3px; text-align: center; display: block; }
-        
-        /* Matrice */
-        .status-cell { text-align: center; padding: 8px; border-radius: 4px; font-weight: bold; }
-        .ready { background-color: #00FF00; color: black; }
-        .missing { background-color: #111; color: #222; border: 1px solid #222; }
+        /* Titres & Branding */
+        .main-title { 
+            color: #FF3131; 
+            text-transform: uppercase; 
+            font-size: 28px; 
+            font-weight: bold; 
+            text-align: center; 
+            text-shadow: 0 0 15px #FF3131; 
+            margin-bottom: 20px;
+        }
+
+        /* Matrice de confluences */
+        .status-cell { text-align: center; padding: 10px; border-radius: 5px; font-weight: bold; font-size: 12px; }
+        .ready { background-color: #00FF00; color: black; box-shadow: 0 0 10px #00FF00; }
+        .missing { background-color: #0A0A0A; color: #333; border: 1px solid #222; }
+
+        /* Cacher les éléments Streamlit inutiles */
+        #MainMenu, footer, header {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -50,9 +76,9 @@ if 'scans' not in st.session_state:
     assets = ["NASDAQ (NQ)", "GOLD (XAU)", "DXY", "EURUSD", "GBPUSD", "US30", "BITCOIN", "OIL (WTI)", "ETH", "NVDA"]
     st.session_state.scans = {a: {"1D": False, "1H": False, "15M": False} for a in assets}
 
-# --- LOGIN ---
+# --- LOGIN SCREEN ---
 if not st.session_state.auth:
-    st.markdown("<br><br><span class='brand-text'>HediAyoub presents</span><h1 class='main-title'>THE PREDATOR</h1>", unsafe_allow_html=True)
+    st.markdown("<br><br><h1 class='main-title'>THE PREDATOR</h1>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([0.1, 0.8, 0.1])
     with col2:
         key = st.text_input("ALPHA KEY", type="password")
@@ -69,32 +95,31 @@ else:
         with c1: active_asset = st.selectbox("ACTIF", list(st.session_state.scans.keys()))
         with c2: active_tf = st.selectbox("TIMEFRAME", ["1D", "1H", "15M"])
         
-        # Le bouton qui était blanc est maintenant NOIR
         img_file = st.file_uploader("CLIQUEZ ICI POUR SCANNER", type=['png', 'jpg', 'jpeg'])
         if img_file:
             st.session_state.scans[active_asset][active_tf] = True
-            st.toast("DATA OK")
+            st.toast(f"{active_asset} LOADED")
 
     st.divider()
 
-    # Matrice
-    col_m, col_v = st.columns([1.5, 1])
-    with col_m:
-        st.markdown("<p style='font-size:12px;color:#555;'>📊 MATRICE DES FLUX</p>", unsafe_allow_html=True)
-        for asset, tfs in st.session_state.scans.items():
-            r = st.columns([1.5, 1, 1, 1])
-            r[0].write(f"<small>{asset}</small>", unsafe_allow_html=True)
-            for i, tf in enumerate(["1D", "1H", "15M"]):
-                if tfs[tf]: r[i+1].markdown('<div class="status-cell ready">OK</div>', unsafe_allow_html=True)
-                else: r[i+1].markdown('<div class="status-cell missing">-</div>', unsafe_allow_html=True)
+    # Matrice de flux
+    st.markdown("<p style='font-size:12px;color:#555;letter-spacing:2px;'>📊 MATRICE DES FLUX</p>", unsafe_allow_html=True)
+    for asset, tfs in st.session_state.scans.items():
+        r = st.columns([1.5, 1, 1, 1])
+        r[0].write(f"<small>{asset}</small>", unsafe_allow_html=True)
+        for i, tf in enumerate(["1D", "1H", "15M"]):
+            if tfs[tf]: r[i+1].markdown('<div class="status-cell ready">OK</div>', unsafe_allow_html=True)
+            else: r[i+1].markdown('<div class="status-cell missing">-</div>', unsafe_allow_html=True)
 
-    with col_v:
-        st.markdown("<p style='font-size:12px;color:#555;'>🤖 AI VERDICT</p>", unsafe_allow_html=True)
-        ready = [a for a, v in st.session_state.scans.items() if all(v.values())]
-        if ready:
-            st.markdown(f"<div style='border:2px solid #00FF00;padding:20px;border-radius:10px;text-align:center;'><h3>{ready[0]}</h3><h2 style='color:#00FF00;'>SIGNAL A+</h2></div>", unsafe_allow_html=True)
-            if st.button("RESET"):
-                st.session_state.scans = {a: {"1D": False, "1H": False, "15M": False} for a in st.session_state.scans.keys()}
-                st.rerun()
-        else:
-            st.info("DATA MANQUANTE")
+    # Verdict
+    ready = [a for a, v in st.session_state.scans.items() if all(v.values())]
+    if ready:
+        st.markdown(f"""
+            <div style='border:2px solid #00FF00;padding:20px;border-radius:10px;text-align:center;background:#010801;margin-top:20px;'>
+                <h3 style='margin:0;'>{ready[0]}</h3>
+                <h2 style='color:#00FF00;margin:0;'>SIGNAL A+ DÉTECTÉ</h2>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("RESET"):
+            st.session_state.scans = {a: {"1D": False, "1H": False, "15M": False} for a in st.session_state.scans.keys()}
+            st.rerun()
