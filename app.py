@@ -1,70 +1,82 @@
 import streamlit as st
 
 # ==========================================
-# 1. CONFIGURATION & DESIGN TOTAL BLACK
+# 1. CONFIGURATION & HACK CSS RADICAL
 # ==========================================
 st.set_page_config(page_title="THE PREDATOR", layout="wide")
 
 st.markdown("""
     <style>
-        /* Fond global noir absolu */
-        .stApp, [data-testid="stAppViewContainer"] { 
-            background-color: #000000 !important; 
-            color: #FFFFFF !important; 
+        /* 1. FORCE LE NOIR SUR TOUTES LES COUCHES SYSTEME */
+        html, body, [data-testid="stAppViewContainer"], .stApp {
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
         }
 
-        /* 1. FIX EXPANDER (Le titre "Capture Haute Résolution" qui était blanc) */
-        .streamlit-expanderHeader {
+        /* 2. TUER LE BLANC DE L'EXPANDER (L'en-tête et le contour) */
+        [data-testid="stExpander"] {
+            background-color: #000000 !important;
+            border: 1px solid #FF3131 !important;
+            border-radius: 10px !important;
+        }
+        [data-testid="stExpander"] summary {
             background-color: #000000 !important;
             color: #FF3131 !important;
-            border: 1px solid #222 !important;
         }
-        .streamlit-expanderContent {
-            background-color: #000000 !important;
-            border: 1px solid #222 !important;
+        [data-testid="stExpander"] svg {
+            fill: #FF3131 !important;
         }
 
-        /* 2. FIX UPLOADER (Le gros carré Drag & Drop) */
+        /* 3. TUER LE BLANC DE LA ZONE D'UPLOAD (Le carré et son contenu) */
         [data-testid="stFileUploadDropzone"] {
-            background-color: #050505 !important;
+            background-color: #000000 !important;
             border: 2px dashed #FF3131 !important;
-        }
-        [data-testid="stFileUploadDropzone"] p, [data-testid="stFileUploadDropzone"] small {
-            color: #444 !important; /* Rend le texte "Limit 200MB" presque invisible */
-        }
-
-        /* 3. FIX BOUTON INTERNE (Le bouton "Browse files") */
-        [data-testid="stFileUploadDropzone"] button {
-            background-color: #FF3131 !important;
-            color: black !important;
-            border: none !important;
-        }
-
-        /* 4. FIX INPUTS (Cases NASDAQ, 15M, etc.) */
-        div[data-baseweb="select"] > div { 
-            background-color: #0A0A0A !important; 
-            border: 1px solid #FF3131 !important; 
-            color: white !important; 
+            color: #FFFFFF !important;
         }
         
-        /* Titres & Branding */
-        .main-title { 
-            color: #FF3131; 
-            text-transform: uppercase; 
-            font-size: 28px; 
-            font-weight: bold; 
-            text-align: center; 
-            text-shadow: 0 0 15px #FF3131; 
-            margin-bottom: 20px;
+        /* Cacher le texte gris clair 'Drag and drop' qui fait 'tache' */
+        [data-testid="stFileUploadDropzone"] div div {
+            color: #000000 !important; /* Le rend invisible sur fond noir */
+        }
+        
+        /* Forcer le bouton 'Browse files' en Rouge Predator */
+        [data-testid="stFileUploadDropzone"] button {
+            background-color: #FF3131 !important;
+            color: #000000 !important;
+            border-radius: 5px !important;
+            font-weight: bold !important;
         }
 
-        /* Matrice de confluences */
+        /* 4. FIX DES MENUS DÉROULANTS (NASDAQ, 15M...) */
+        div[data-baseweb="select"] > div {
+            background-color: #000000 !important;
+            border: 1px solid #FF3131 !important;
+        }
+        div[role="listbox"] {
+            background-color: #000000 !important;
+            color: white !important;
+        }
+
+        /* 5. CACHER LE HEADER STREAMLIT ET LA LIGNE BLANCHE EN HAUT */
+        header {visibility: hidden !important;}
+        [data-testid="stHeader"] {background-color: rgba(0,0,0,0) !important;}
+        footer {visibility: hidden !important;}
+
+        /* Titre Néon */
+        .main-title {
+            color: #FF3131;
+            text-transform: uppercase;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 15px #FF3131;
+            margin-bottom: 20px;
+        }
+        
+        /* Matrice */
         .status-cell { text-align: center; padding: 10px; border-radius: 5px; font-weight: bold; font-size: 12px; }
         .ready { background-color: #00FF00; color: black; box-shadow: 0 0 10px #00FF00; }
-        .missing { background-color: #0A0A0A; color: #333; border: 1px solid #222; }
-
-        /* Cacher les éléments Streamlit inutiles */
-        #MainMenu, footer, header {visibility: hidden;}
+        .missing { background-color: #050505; color: #222; border: 1px solid #111; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -91,9 +103,8 @@ else:
     st.markdown("<h1 class='main-title'>THE PREDATOR AI</h1>", unsafe_allow_html=True)
 
     with st.expander("🎯 CAPTURE HAUTE RÉSOLUTION", expanded=True):
-        c1, c2 = st.columns(2)
-        with c1: active_asset = st.selectbox("ACTIF", list(st.session_state.scans.keys()))
-        with c2: active_tf = st.selectbox("TIMEFRAME", ["1D", "1H", "15M"])
+        active_asset = st.selectbox("ACTIF", list(st.session_state.scans.keys()))
+        active_tf = st.selectbox("TIMEFRAME", ["1D", "1H", "15M"])
         
         img_file = st.file_uploader("CLIQUEZ ICI POUR SCANNER", type=['png', 'jpg', 'jpeg'])
         if img_file:
@@ -102,8 +113,7 @@ else:
 
     st.divider()
 
-    # Matrice de flux
-    st.markdown("<p style='font-size:12px;color:#555;letter-spacing:2px;'>📊 MATRICE DES FLUX</p>", unsafe_allow_html=True)
+    # Matrice
     for asset, tfs in st.session_state.scans.items():
         r = st.columns([1.5, 1, 1, 1])
         r[0].write(f"<small>{asset}</small>", unsafe_allow_html=True)
@@ -114,12 +124,7 @@ else:
     # Verdict
     ready = [a for a, v in st.session_state.scans.items() if all(v.values())]
     if ready:
-        st.markdown(f"""
-            <div style='border:2px solid #00FF00;padding:20px;border-radius:10px;text-align:center;background:#010801;margin-top:20px;'>
-                <h3 style='margin:0;'>{ready[0]}</h3>
-                <h2 style='color:#00FF00;margin:0;'>SIGNAL A+ DÉTECTÉ</h2>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"<div style='border:2px solid #00FF00;padding:20px;border-radius:10px;text-align:center;background:#010801;margin-top:20px;'><h3>{ready[0]}</h3><h2 style='color:#00FF00;'>SIGNAL A+</h2></div>", unsafe_allow_html=True)
         if st.button("RESET"):
             st.session_state.scans = {a: {"1D": False, "1H": False, "15M": False} for a in st.session_state.scans.keys()}
             st.rerun()
