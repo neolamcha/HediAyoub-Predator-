@@ -1,146 +1,151 @@
 import streamlit as st
 
 # ==========================================
-# 1. ARCHITECTURE & DESIGN SYSTÈME
+# 1. CONFIGURATION ÉCRAN & IOS OPTIMISATION
 # ==========================================
 st.set_page_config(
-    page_title="HediaAyoub - THE PREDATOR",
+    page_title="HediAyoub - PREDATOR",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Style CSS Final (Zéro Blanc / Contraste Élevé pour iPhone)
+# STYLE DARK MODE INSTITUTIONNEL
 st.markdown("""
     <style>
-        /* Fond Noir Pur */
+        /* Fond Noir Radical */
         .stApp { background-color: #000000; color: #FFFFFF; font-family: 'Courier New', monospace; }
         
-        /* Inputs et Sélecteurs (Forcer visibilité sur mobile) */
-        div[data-baseweb="select"] > div { background-color: #0F0F0F !important; border: 1px solid #FF3131 !important; color: white !important; }
-        div[data-baseweb="base-input"] { background-color: #0F0F0F !important; border: 1px solid #FF3131 !important; }
-        input { color: white !important; background-color: #0F0F0F !important; }
+        /* Suppression des marges pour Full Screen */
+        .block-container { padding: 1rem !important; max-width: 100% !important; }
+
+        /* Inputs et Sélecteurs Ultra-Dark */
+        div[data-baseweb="select"] > div { background-color: #0A0A0A !important; border: 1px solid #333 !important; color: white !important; }
+        div[data-baseweb="base-input"] { background-color: #0A0A0A !important; border: 1px solid #333 !important; }
         
-        /* Boutons Predator */
+        /* Bouton de Capture (Le "Clic" Pro) */
+        section[data-testid="stFileUploadDropzone"] {
+            background-color: #050505 !important;
+            border: 2px dashed #FF3131 !important;
+            border-radius: 15px !important;
+            padding: 20px !important;
+        }
+        
+        /* Boutons de commande */
         .stButton>button { 
-            background-color: #000000; 
+            background-color: #111; 
             color: #FF3131; 
-            border: 2px solid #FF3131; 
+            border: 1px solid #FF3131; 
             font-weight: bold; 
-            text-transform: uppercase;
             width: 100%;
-            height: 50px;
-            letter-spacing: 2px;
+            height: 45px;
+            letter-spacing: 1px;
         }
         .stButton>button:hover { background-color: #FF3131; color: black; }
 
-        /* Matrice de Confluence */
-        .status-cell { text-align: center; padding: 12px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        /* Matrice visuelle */
+        .status-cell { text-align: center; padding: 10px; border-radius: 5px; font-weight: bold; font-size: 12px; }
         .ready { background-color: #00FF00; color: black; box-shadow: 0 0 10px #00FF00; }
-        .missing { background-color: #111111; color: #333333; border: 1px solid #222; }
+        .missing { background-color: #111; color: #333; border: 1px solid #222; }
         
-        /* Branding */
-        .brand-text { color: #555555; text-transform: uppercase; font-size: 12px; letter-spacing: 4px; text-align: center; display: block; }
-        .main-title { color: #FF3131; text-transform: uppercase; font-size: 32px; font-weight: bold; text-align: center; margin-top: -10px; text-shadow: 0 0 15px #FF3131; }
-        .verdict-box { border: 2px solid #00FF00; padding: 25px; border-radius: 15px; background: #000A00; text-align: center; }
+        /* Titres & Branding */
+        .brand-text { color: #444; text-transform: uppercase; font-size: 11px; letter-spacing: 4px; text-align: center; display: block; }
+        .main-title { color: #FF3131; text-transform: uppercase; font-size: 26px; font-weight: bold; text-align: center; text-shadow: 0 0 10px #FF3131; }
+        .verdict-card { border: 2px solid #00FF00; padding: 25px; border-radius: 15px; background: #010801; text-align: center; }
     </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 2. GESTION DE LA SESSION & SÉCURITÉ
+# 2. LOGIQUE DE SESSION & SÉCURITÉ
 # ==========================================
 if "auth" not in st.session_state:
     st.session_state.auth = False
 
 if 'scans' not in st.session_state:
-    # Les 10 Actifs Maîtres
     assets = ["NASDAQ (NQ)", "GOLD (XAU)", "DXY", "EURUSD", "GBPUSD", "US30", "BITCOIN", "OIL (WTI)", "ETH", "NVDA"]
     st.session_state.scans = {a: {"1D": False, "1H": False, "15M": False} for a in assets}
 
-# --- ÉCRAN DE DÉVERROUILLAGE ---
+# --- LOGIN SCREEN ---
 if not st.session_state.auth:
     st.markdown("<br><br><span class='brand-text'>HediAyoub presents</span>", unsafe_allow_html=True)
     st.markdown("<h1 class='main-title'>THE PREDATOR</h1>", unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns([0.1, 0.8, 0.1])
-    with col2:
-        st.markdown("<p style='text-align:center; color:#888;'>SYSTÈME CRYPTÉ - ENTRER CLÉ ALPHA</p>", unsafe_allow_html=True)
-        access_key = st.text_input("", type="password", placeholder="PASSWORD...")
-        if st.button("INITIALISER LE SCANNER"):
-            if access_key == "PREDATOR2026":
+    col_l, col_c, col_r = st.columns([0.1, 0.8, 0.1])
+    with col_c:
+        st.write("")
+        key = st.text_input("ALPHA KEY", type="password", placeholder="CODE...")
+        if st.button("INITIALISER LE PROTOCOLE"):
+            if key == "PREDATOR2026":
                 st.session_state.auth = True
                 st.rerun()
-            else:
-                st.error("ACCÈS REFUSÉ")
 else:
     # ==========================================
-    # 3. TERMINAL ACTIF
+    # 3. TERMINAL ACTIF - HEDIAYOUB EDITION
     # ==========================================
     st.markdown("<span class='brand-text'>HediAyoub - Strategic Terminal</span>", unsafe_allow_html=True)
     st.markdown("<h1 class='main-title'>THE PREDATOR AI</h1>", unsafe_allow_html=True)
-    
-    # Zone de Scan Dynamique
-    with st.expander("📷 SCANNER UN ACTIF (CAMÉRA)", expanded=True):
-        c_act, c_tf = st.columns(2)
-        with c_act:
-            target_asset = st.selectbox("ACTIF", list(st.session_state.scans.keys()))
-        with c_tf:
-            target_tf = st.selectbox("TIMEFRAME", ["1D", "1H", "15M"])
+
+    # --- SECTION CAPTURE HD ---
+    with st.expander("🎯 CAPTURE HAUTE RÉSOLUTION (CLIC CAMÉRA)", expanded=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            active_asset = st.selectbox("ACTIF", list(st.session_state.scans.keys()))
+        with c2:
+            active_tf = st.selectbox("TIMEFRAME", ["1D", "1H", "15M"])
         
-        cam_data = st.camera_input("POINT & SCAN")
-        if cam_data:
-            st.session_state.scans[target_asset][target_tf] = True
-            st.toast(f"DATA {target_asset} {target_tf} VALIDÉE")
+        # Le déclencheur de la caméra native iPhone
+        st.markdown("<p style='font-size:12px; color:#666; text-align:center;'>Cliquez ci-dessous pour capturer en 4K/HD</p>", unsafe_allow_html=True)
+        img_file = st.file_uploader("📸 PRENDRE LA PHOTO DU GRAPHIQUE", type=['png', 'jpg', 'jpeg'])
+        
+        if img_file:
+            st.session_state.scans[active_asset][active_tf] = True
+            st.toast(f"DATA {active_asset} VALIDÉE ✅")
 
     st.divider()
 
-    # Matrice de Confluence & Verdict
-    col_mat, col_ver = st.columns([1.5, 1])
+    # --- MATRICE DE CONFLUENCE & ANALYSE ---
+    col_matrix, col_analysis = st.columns([1.6, 1])
 
-    with col_mat:
-        st.markdown("<h3 style='font-size:14px; letter-spacing:2px;'>📊 MATRICE DES FLUX</h3>", unsafe_allow_html=True)
-        # Header
-        m1, m2, m3, m4 = st.columns([1.5, 1, 1, 1])
-        m1.markdown("<small>ACTIF</small>", unsafe_allow_html=True)
-        m2.markdown("<small>1D</small>", unsafe_allow_html=True)
-        m3.markdown("<small>1H</small>", unsafe_allow_html=True)
-        m4.markdown("<small>15M</small>", unsafe_allow_html=True)
+    with col_matrix:
+        st.markdown("<h3 style='font-size:13px; letter-spacing:2px;'>📊 MATRICE DES FLUX</h3>", unsafe_allow_html=True)
+        m_head = st.columns([1.5, 1, 1, 1])
+        m_head[0].write("<small>ACTIF</small>", unsafe_allow_html=True)
+        m_head[1].write("<small>1D</small>", unsafe_allow_html=True)
+        m_head[2].write("<small>1H</small>", unsafe_allow_html=True)
+        m_head[3].write("<small>15M</small>", unsafe_allow_html=True)
 
         for asset, tfs in st.session_state.scans.items():
-            r1, r2, r3, r4 = st.columns([1.5, 1, 1, 1])
-            r1.write(f"**{asset}**")
-            for tf, r_col in zip(["1D", "1H", "15M"], [r2, r3, r4]):
+            r = st.columns([1.5, 1, 1, 1])
+            r[0].write(f"**{asset}**")
+            for i, tf in enumerate(["1D", "1H", "15M"]):
                 if tfs[tf]:
-                    r_col.markdown('<div class="status-cell ready">OK</div>', unsafe_allow_html=True)
+                    r[i+1].markdown('<div class="status-cell ready">OK</div>', unsafe_allow_html=True)
                 else:
-                    r_col.markdown('<div class="status-cell missing">-</div>', unsafe_allow_html=True)
+                    r[i+1].markdown('<div class="status-cell missing">-</div>', unsafe_allow_html=True)
 
-    with col_ver:
-        st.markdown("<h3 style='font-size:14px; letter-spacing:2px;'>🤖 ANALYSE IA</h3>", unsafe_allow_html=True)
+    with col_analysis:
+        st.markdown("<h3 style='font-size:13px; letter-spacing:2px;'>🤖 AI VERDICT</h3>", unsafe_allow_html=True)
         
-        # Logique de détection de complétion
+        # Vérification si un actif est prêt
         ready_assets = [a for a, v in st.session_state.scans.items() if all(v.values())]
         
         if ready_assets:
             chosen = ready_assets[0]
             st.markdown(f"""
-                <div class="verdict-box">
+                <div class="verdict-card">
                     <p style="color:#555; font-size:10px; margin:0;">HEDIAYOUB - THE PREDATOR</p>
-                    <h2 style="color:#00FF00; margin:5px;">SIGNAL A+ DÉTECTÉ</h2>
-                    <h1 style="color:white; font-size:40px; margin:0;">{chosen}</h1>
-                    <p style="color:#888; font-size:12px;">CORRÉLATION YOUTUBE OK ✅</p>
+                    <h2 style="color:#00FF00; margin:5px;">SIGNAL A+ VALIDÉ</h2>
+                    <h1 style="color:white; font-size:32px; margin:0;">{chosen}</h1>
+                    <p style="color:#888; font-size:11px;">ORDRE : BUY / LONG</p>
                     <hr style="border-color:#111;">
-                    <p style="font-size:22px; color:#00FF00; margin:0;">ORDRE : BUY/LONG</p>
-                    <p style="font-size:14px; color:#888;">TP : LIQUIDITÉ BOOKMAP</p>
+                    <p style="font-size:13px; color:#555;">Analyse basée sur flux : NQ / Gold Bookmap</p>
                 </div>
             """, unsafe_allow_html=True)
-            if st.button("RÉINITIALISER TOUT"):
+            if st.button("RESET TOUT"):
                 st.session_state.scans = {a: {"1D": False, "1H": False, "15M": False} for a in st.session_state.scans.keys()}
                 st.rerun()
         else:
-            st.info("MATRICE EN ATTENTE DE DONNÉES 1D, 1H ET 15M")
+            st.info("MATRICE EN ATTENTE (1D+1H+15M)")
 
-    # Sidebar Mobile
-    st.sidebar.markdown("### 📡 FLUX INSTITUTIONNELS")
-    st.sidebar.caption("NQ Orderflow: jc1Ds-Uz6gE")
-    st.sidebar.caption("Gold Liquidity: kvhRserj8ME")
+    # Sidebar Mobile Footer
+    st.sidebar.caption("HediAyou
