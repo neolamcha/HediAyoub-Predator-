@@ -1,47 +1,59 @@
 import streamlit as st
-import pandas as pd
 
 # ==========================================
-# 1. CONFIGURATION SYSTEME & IOS PWA
+# 1. CONFIGURATION SYSTEME & MARQUAGE iOS
 # ==========================================
 st.set_page_config(
-    page_title="PREDATOR AI | QUANT TERMINAL",
-    page_icon="🎯",
+    page_title="HediAyoub - PREDATOR",
+    page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Configuration pour le mode App iOS
+# Configuration pour le mode App iOS (PWA)
 st.markdown("""
     <head>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="PREDATOR AI">
+        <meta name="apple-mobile-web-app-title" content="The Predator">
         <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2583/2583100.png">
         <style>
+            /* Base noir mat */
             .stApp { background-color: #000000; color: #FFFFFF; font-family: 'Courier New', monospace; }
-            .stCameraInput { border: 2px solid #FF3131 !important; }
-            .status-cell { text-align: center; padding: 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
-            .ready { background-color: #004400; color: #00FF00; border: 1px solid #00FF00; }
-            .missing { background-color: #220000; color: #FF3131; border: 1px solid #FF3131; }
-            .verdict-card { border: 2px solid #00FF00; padding: 25px; border-radius: 10px; background: #000B00; text-align: center; box-shadow: 0 0 20px rgba(0,255,0,0.2); }
-            h1, h2, h3 { color: #FF3131; text-transform: uppercase; letter-spacing: 3px; }
+            
+            /* Style de la caméra (téléphone) */
+            .stCameraInput { border: 2px solid #FF3131 !important; border-radius: 10px; }
+            
+            /* Tableau de confluences */
+            .status-cell { text-align: center; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+            .ready { background-color: #003300; color: #00FF00; border: 1px solid #00FF00; }
+            .missing { background-color: #1A0000; color: #FF3131; border: 1px solid #FF3131; }
+            
+            /* Carte de Verdict Final */
+            .verdict-card { border: 3px solid #00FF00; padding: 30px; border-radius: 15px; background: #000800; text-align: center; box-shadow: 0 0 25px rgba(0,255,0,0.3); }
+            
+            /* Styles de texte spécifiques */
+            .brand-header { color: #888888; text-transform: uppercase; font-size: 14px; letter-spacing: 5px; text-align: center; margin-bottom: 0px; }
+            .app-title { color: #FF3131; text-transform: uppercase; font-size: 30px; letter-spacing: 2px; font-weight: bold; text-align: center; margin-top: 0px; text-shadow: 0 0 10px #FF3131; }
+            .section-title { color: #FFFFFF; text-transform: uppercase; letter-spacing: 3px; border-bottom: 1px solid #222; padding-bottom: 5px; }
         </style>
     </head>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 2. LOGIQUE DE SECURITE
+# 2. LOGIQUE DE SECURITE & MEMOIRE
 # ==========================================
 if "auth" not in st.session_state:
     st.session_state.auth = False
 if 'scans' not in st.session_state:
-    # 10 Actifs corrélés aux flux YouTube fournis
+    # 10 Actifs corrélés aux flux YouTube institutionnels
     assets_list = ["NASDAQ (NQ)", "GOLD (XAU)", "DXY", "EURUSD", "GBPUSD", "US30", "BITCOIN", "OIL (WTI)", "ETH", "NVDA"]
     st.session_state.scans = {asset: {"1D": None, "1H": None, "15M": None} for asset in assets_list}
 
+# --- ÉCRAN DE CONNEXION ---
 if not st.session_state.auth:
-    st.markdown("<br><br><h1 style='text-align:center;'>PREDATOR AI</h1>", unsafe_allow_html=True)
+    st.markdown("<br><br><p class='brand-header'>HediAyoub presents</p>", unsafe_allow_html=True)
+    st.markdown("<h1 class='app-title'>The Predator</h1>", unsafe_allow_html=True)
     with st.container():
         col_l, col_c, col_r = st.columns([1, 1.5, 1])
         with col_c:
@@ -53,19 +65,22 @@ if not st.session_state.auth:
                 else:
                     st.error("ACCES REFUSE")
 else:
+    # --- HEADER PRINCIPAL ---
+    st.markdown("<p class='brand-header'>HediAyoub presents</p>", unsafe_allow_html=True)
+    st.markdown("<h1 class='app-title'>The Predator AI Terminal</h1>", unsafe_allow_html=True)
+    st.markdown("---")
+
     # ==========================================
     # 3. INTERFACE DE SCAN (MULTI-TF)
     # ==========================================
-    st.title("🛡️ MATRICE DE CONFLUENCE")
-    
-    with st.expander("📷 SCANNER UN GRAPHIQUE (MOBILE VISION)", expanded=True):
+    with st.expander("📸 ALIMENTER LA MATRICE (MOBILE VISION)", expanded=True):
         c1, c2, c3 = st.columns([1.5, 1, 2])
         with c1:
-            active_asset = st.selectbox("ACTIF", list(st.session_state.scans.keys()))
+            active_asset = st.selectbox("ACTIF TARGET", list(st.session_state.scans.keys()))
         with c2:
-            active_tf = st.selectbox("TIMEFRAME", ["1D", "1H", "15M"])
+            active_tf = st.selectbox("UNITÉ DE TEMPS", ["1D", "1H", "15M"])
         with c3:
-            img = st.camera_input("SCAN")
+            img = st.camera_input("SCANNER LE GRAPHIQUE")
             if img:
                 st.session_state.scans[active_asset][active_tf] = img
                 st.success(f"DATA {active_asset} {active_tf} ENREGISTREE")
@@ -78,13 +93,14 @@ else:
     col_table, col_verdict = st.columns([1.8, 1])
 
     with col_table:
-        st.subheader("📊 MONITORING DES 10 ACTIFS")
-        # En-tête
+        st.markdown("<h3 class='section-title'>📊 MONITORING DES 10 ACTIFS INSTITUTIONNELS</h3>", unsafe_allow_html=True)
+        
+        # En-tête du tableau
         h1, h2, h3, h4 = st.columns([1.5, 1, 1, 1])
         h1.write("**SYMBOLE**")
-        h2.write("**1D**")
-        h3.write("**1H**")
-        h4.write("**15M**")
+        h2.write("**1D MACRO**")
+        h3.write("**1H STRUCT**")
+        h4.write("**15M EXEC**")
 
         for asset, tfs in st.session_state.scans.items():
             r1, r2, r3, r4 = st.columns([1.5, 1, 1, 1])
@@ -97,35 +113,38 @@ else:
                     r_col.markdown('<div class="status-cell missing">VIDE</div>', unsafe_allow_html=True)
 
     with col_verdict:
-        st.subheader("🤖 VERDICT IA")
+        st.markdown("<h3 class='section-title'>🤖 VERDICT HEDIAYOUB AI</h3>", unsafe_allow_html=True)
         
-        # Vérification si au moins un actif est complet (3 TF)
+        # Vérification des actifs complétés (3 TF)
         completed_assets = [a for a, tfs in st.session_state.scans.items() if all(tfs.values())]
         
         if completed_assets:
-            target = completed_assets[0] # Priorité au premier actif complété
+            target = completed_assets[0] # Traitement du premier actif complet
             st.markdown(f"""
                 <div class="verdict-card">
-                    <h2 style="color:#00FF00;">SIGNAL A+ DETECTE</h2>
-                    <h1 style="color:white; margin:0;">{target}</h1>
-                    <p style="color:#888;">CORRELATION YOUTUBE : VALIDEE ✅</p>
+                    <p style="color:#FFFFFF; font-size:12px; letter-spacing:2px;">Hedia Ayoub - The Predator presents</p>
+                    <h2 style="color:#00FF00; margin-top:5px;">SIGNAL A+ VALIDÉ</h2>
+                    <h1 style="color:white; margin:0; font-size:40px;">{target}</h1>
+                    <p style="color:#888;">CORRELATION FLUX YOUTUBE : VALIDEE ✅</p>
                     <hr style="border-color:#111;">
                     <p style="font-size:20px;">ORDRE : <span style="color:#00FF00;">ACHAT (LONG)</span></p>
                     <p style="font-size:18px;"><b>ENTREE :</b> AU MARCHE</p>
                     <p style="color:#FF3131;"><b>SL :</b> STRUCTURE SMC -2 TICKS</p>
                     <p style="color:#00FF00;"><b>TP :</b> LIQUIDITE BOOKMAP (MUR)</p>
                     <br>
-                    <p style="font-size:11px; color:#555;">Analyse basée sur flux : jc1Ds-Uz6gE, XZs8kRuL12k, kvhRserj8ME</p>
+                    <p style="font-size:10px; color:#555;">Basé sur : NQ Bookmap (jc1Ds-Uz6gE) / Gold Liq (kvhRserj8ME)</p>
                 </div>
             """, unsafe_allow_html=True)
-            if st.button("RESET DATA"):
+            if st.button("EFFACER LA MATRICE (PROTOCOLE D'EFFACEMENT)"):
                 st.session_state.scans = {asset: {"1D": None, "1H": None, "15M": None} for asset in st.session_state.scans.keys()}
                 st.rerun()
         else:
-            st.warning("IA EN ATTENTE : Complétez les 3 unités de temps (1D, 1H, 15M) pour débloquer la fusion Orderflow.")
+            st.warning("IA EN ATTENTE : Complétez les 3 unités de temps (1D, 1H, 15M) d'un actif pour débloquer la fusion Orderflow.")
 
-    # Sidebar infos
-    st.sidebar.markdown("### 📡 FLUX ACTIFS")
+    # Sidebar infos pour iOS
+    st.sidebar.markdown(f"### HediAyoub - Predator")
+    st.sidebar.write("Terminal actif sur les flux institutionnels.")
     st.sidebar.caption("NQ Bookmap: jc1Ds-Uz6gE")
     st.sidebar.caption("ES Footprint: XZs8kRuL12k")
-    st.sidebar.caption("Gold Liq: kvhRserj8ME")
+    st.sidebar.caption("Gold Liquidity: kvhRserj8ME")
+    st.sidebar.caption("DXY Heatmap: 69jd1dOq4C8")
