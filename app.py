@@ -6,181 +6,195 @@ import re
 import random
 
 # ==========================================
-# 0. CONFIGURATION SYSTÈME SOUVERAIN
+# SYSTEM CORE : HEDIAYOUB QUANTUM V13.0
 # ==========================================
 st.set_page_config(
-    page_title="HEDIAYOUB QUANTUM PROTOCOL",
-    page_icon="🎯",
+    page_title="HEDIAYOUB QUANTUM",
+    page_icon="🔴",
     layout="wide",
-    initial_sidebar_state="collapsed"
 )
 
-# Chargement du cerveau IA (OCR) - Mise en cache pour la vitesse
 @st.cache_resource
 def load_quantum_vision():
     return easyocr.Reader(['en'])
 
-try:
-    reader = load_quantum_vision()
-except Exception:
-    st.error("Initialisation du moteur de vision... Veuillez patienter.")
-    st.stop()
+reader = load_quantum_vision()
 
 # ==========================================
-# 1. DESIGN INSTITUTIONNEL (CSS DARK LUXURY)
+# DESIGN : LUXURY OBSIDIAN INTERFACE
 # ==========================================
 st.markdown("""
     <style>
-        /* Base Dark Mode */
-        .stApp { background-color: #000000; color: #FFFFFF; }
-        
-        /* Bannière Quantum */
-        .quantum-header { 
-            background: radial-gradient(circle, #1a0000 0%, #000000 100%); 
-            padding: 50px 20px; text-align: center; 
-            border-bottom: 1px solid #333;
-            margin-bottom: 30px;
-        }
-        .main-title { 
-            color: #FFFFFF; font-size: 35px; font-weight: 200; 
-            letter-spacing: 18px; text-transform: uppercase; margin: 0;
-        }
-        .sub-brand { color: #FF3131; letter-spacing: 6px; font-size: 14px; font-weight: 900; margin-top: 10px; }
-        
-        /* Alertes Rempart TF */
-        .tf-reminder { 
-            display: inline-block; border: 2px solid #FF3131; 
-            padding: 10px 25px; border-radius: 0px; 
-            color: #FF3131; font-weight: 900; font-size: 20px;
-            margin-top: 25px; text-transform: uppercase;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;400;900&family=JetBrains+Mono:wght@100&display=swap');
+
+        /* Background Principal */
+        .stApp { 
+            background: radial-gradient(circle at top, #1a0505 0%, #000000 100%); 
+            color: #FFFFFF; 
+            font-family: 'Inter', sans-serif;
         }
 
-        /* Cadres de données */
-        .data-card { 
-            background: #050505; border: 1px solid #222; 
-            padding: 25px; border-radius: 5px; text-align: center; 
+        /* Header Ultra-Luxe */
+        .quantum-header {
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 49, 49, 0.2);
+            margin-bottom: 40px;
         }
-        .label-text { color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
-        .price-tp { color: #00FF00; font-size: 38px; font-weight: 900; }
-        .price-sl { color: #FF3131; font-size: 38px; font-weight: 900; }
+        .main-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 100;
+            letter-spacing: 25px;
+            font-size: 45px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+        .sub-brand {
+            font-family: 'JetBrains Mono', monospace;
+            color: #FF3131;
+            letter-spacing: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        /* Badge de Rempart TF */
+        .tf-status-bar {
+            background: rgba(255, 49, 49, 0.05);
+            border: 1px solid #FF3131;
+            padding: 12px 30px;
+            display: inline-block;
+            margin-top: 30px;
+            font-weight: 900;
+            color: #FF3131;
+            letter-spacing: 3px;
+            box-shadow: 0 0 20px rgba(255, 49, 49, 0.1);
+        }
+
+        /* Cartes de Data (Glassmorphism) */
+        .data-card {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 2px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .data-card:hover {
+            border-color: rgba(255, 49, 49, 0.3);
+            background: rgba(20, 20, 20, 0.9);
+        }
+
+        .label-text {
+            color: #444;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .tp-glow {
+            color: #00FF00;
+            font-size: 42px;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+        .sl-glow {
+            color: #FF3131;
+            font-size: 42px;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255, 49, 49, 0.2);
+        }
+
+        /* Sidebar & Selectbox */
+        .stSelectbox label { color: #555 !important; letter-spacing: 2px; }
         
-        /* Optimisation Mobile */
-        @media (max-width: 600px) {
-            .main-title { font-size: 22px; letter-spacing: 8px; }
-            .price-tp, .price-sl { font-size: 28px; }
-        }
     </style>
 """, unsafe_allow_html=True)
 
-# --- ENTÊTE ---
+# --- UI HEADER ---
 st.markdown("""
     <div class='quantum-header'>
         <h1 class='main-title'>HEDIAYOUB</h1>
-        <p class='sub-brand'>QUANTUM PROTOCOL V12.1</p>
-        <div class='tf-reminder'>REMPART REQUIS : 1D + 15M</div>
+        <p class='sub-brand'>QUANTUM PROTOCOL / V13.0</p>
+        <div class='tf-status-bar'>SYSTEM LOCK : 1D + 15M REQUIRED</div>
     </div>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 2. CONFIGURATION DE L'ORCHESTRE (SMT/DXY)
-# ==========================================
+# --- SELECTION ---
 orchestra = {
-    "NASDAQ (NQ)": {"smt": "ES (S&P500)", "dxy": "Inverse Sync", "chef": "DXY"},
-    "BITCOIN (BTC)": {"smt": "ETH (Ethereum)", "dxy": "Inverse Sync", "chef": "DXY/USDT"},
-    "GOLD (XAU)": {"smt": "XAG (Silver)", "dxy": "Inverse Sync", "chef": "DXY"},
-    "EURUSD": {"smt": "GBPUSD (Cable)", "dxy": "Inverse Sync", "chef": "DXY"},
-    "US30 (DOW)": {"smt": "NQ (Nasdaq)", "dxy": "Inverse Sync", "chef": "DXY"}
+    "NASDAQ (NQ)": {"smt": "ES (S&P500)", "chef": "DXY"},
+    "BITCOIN (BTC)": {"smt": "ETH (Ethereum)", "chef": "DXY/USDT"},
+    "GOLD (XAU)": {"smt": "XAG (Silver)", "chef": "DXY"},
+    "EURUSD": {"smt": "GBPUSD (Cable)", "chef": "DXY"}
 }
 
-st.write("<br>", unsafe_allow_html=True)
-col_setup, col_meta = st.columns([2, 1])
-
-with col_setup:
-    target = st.selectbox("🎯 ACTIF CIBLE", list(orchestra.keys()))
+c_sel, c_info = st.columns([2, 1])
+with c_sel:
+    target = st.selectbox("", list(orchestra.keys()), label_visibility="collapsed")
     info = orchestra[target]
 
-with col_meta:
-    st.markdown(f"""
-        <div style='text-align:right; font-size:13px; color:#555;'>
-            <b>SMT SYNC :</b> {info['smt']}<br>
-            <b>CONDUCTOR :</b> {info['chef']}
-        </div>
-    """, unsafe_allow_html=True)
+with c_info:
+    st.markdown(f"<p style='text-align:right; color:#444; font-size:12px; letter-spacing:2px;'>SYNC: {info['smt']} | CONDUCTOR: {info['chef']}</p>", unsafe_allow_html=True)
 
-# ==========================================
-# 3. LECTURE & VISION (OCR)
-# ==========================================
+# --- UPLOAD SECTION ---
 st.divider()
-uploaded_files = st.file_uploader("📥 INPUT DATASET (6 CAPTURES : 1D & 15M)", accept_multiple_files=True)
+files = st.file_uploader("", accept_multiple_files=True, label_visibility="collapsed")
 
-if uploaded_files and len(uploaded_files) >= 6:
-    with st.status("⚡ QUANTUM ANALYSIS IN PROGRESS...", expanded=True) as status:
-        prices_detected = []
-        for uploaded_file in uploaded_files:
-            image = Image.open(uploaded_file)
-            # Transformation pour l'IA
-            img_array = np.array(image)
-            results = reader.readtext(img_array)
-            
-            for (_, text, _) in results:
-                # Capture des prix (entiers ou décimaux)
-                found = re.findall(r'\d+[.,]\d+|\d{4,}', text)
-                for val in found:
+if files and len(files) >= 6:
+    with st.status("INITIALIZING NEURAL SCAN...", expanded=False) as status:
+        prices = []
+        for f in files:
+            img = np.array(Image.open(f))
+            res = reader.readtext(img)
+            for (_, text, _) in res:
+                nums = re.findall(r'\d+[.,]\d+|\d{4,}', text)
+                for n in nums:
                     try:
-                        num = float(val.replace(',', '.'))
-                        if num > 1.0: prices_detected.append(num)
+                        v = float(n.replace(',', '.'))
+                        if v > 1.0: prices.append(v)
                     except: continue
-        status.update(label="ANALYSIS SUCCESSFUL ✅", state="complete")
+        status.update(label="SCAN COMPLETE", state="complete")
 
-    if prices_detected:
-        tp_val = max(prices_detected)
-        sl_val = min(prices_detected)
-        score = random.randint(96, 99)
-
-        # AFFICHAGE DES RÉSULTATS
-        st.write("<br>", unsafe_allow_html=True)
-        res_1, res_2 = st.columns(2)
+    if prices:
+        tp, sl = max(prices), min(prices)
         
-        with res_1:
+        st.write("<br>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        
+        with col1:
             st.markdown(f"""
                 <div class='data-card'>
-                    <p class='label-text'>PROFIT TARGET (LIQUIDITY)</p>
-                    <p class='price-tp'>{tp_val:.2f}</p>
+                    <p class='label-text'>TARGET LIQUIDITY</p>
+                    <p class='tp-glow'>{tp:.2f}</p>
                 </div>
             """, unsafe_allow_html=True)
             
-        with res_2:
+        with col2:
             st.markdown(f"""
                 <div class='data-card'>
-                    <p class='label-text'>INVALIDATION (STOP LOSS)</p>
-                    <p class='price-sl'>{sl_val:.2f}</p>
+                    <p class='label-text'>INVALIDATION POINT</p>
+                    <p class='sl-glow'>{sl:.2f}</p>
                 </div>
             """, unsafe_allow_html=True)
 
-        st.markdown(f"<h2 style='text-align:center; color:#555; margin-top:30px;'>PROTOCOL SCORE : {score}%</h2>", unsafe_allow_html=True)
-
-        # ==========================================
-        # 4. LE DERNIER REMPART (CHECKLIST)
-        # ==========================================
-        st.divider()
-        st.markdown("<p style='color:#FF3131; font-weight:900; letter-spacing:2px;'>VERIFICATION FINALE DES CONFLUENCES</p>", unsafe_allow_html=True)
+        # --- CHECKLIST DE CONFLUENCE ---
+        st.write("<br><br>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#333; letter-spacing:5px; font-size:10px;'>CONFLUENCE FINAL CHECK</p>", unsafe_allow_html=True)
         
-        c1, c2 = st.columns(2)
-        with c1:
-            check_bookmap = st.checkbox("ABSORPTION BOOKMAP IDENTIFIÉE (YT LIVE)")
-            check_smt = st.checkbox(f"DIVERGENCE SMT CONFIRMÉE ({info['smt']})")
-        with c2:
-            check_dxy = st.checkbox(f"SYNC {info['chef']} VALIDÉE")
-            check_tf = st.checkbox("ALIGNEMENT 1D / 15M OK")
+        chk_1, chk_2, chk_3, chk_4 = st.columns(4)
+        with chk_1: b1 = st.checkbox("BOOKMAP")
+        with chk_2: b2 = st.checkbox("SMT DIV")
+        with chk_3: b3 = st.checkbox("DXY SYNC")
+        with chk_4: b4 = st.checkbox("1D/15M")
 
-        if check_bookmap and check_smt and check_dxy and check_tf:
-            st.success("🎯 TOUTES LES CONFLUENCES SONT ALIGNÉES. EXÉCUTION AUTORISÉE.")
-            st.balloons()
-        else:
-            st.warning("⚠️ PROTOCOLE EN ATTENTE : Un rempart de confluence est manquant.")
-
-        if st.button("TERMINER LA SESSION"):
+        if b1 and b2 and b3 and b4:
+            st.success("PROTOCOL VALIDATED. READY FOR EXECUTION.")
+            st.toast("Access Granted", icon="🔴")
+        
+        if st.button("RESET SYSTEM"):
             st.rerun()
 
 else:
-    st.info(f"En attente du dataset complet (6 captures). Rappel : Pour le {target}, charge la vue Daily et 15min de la cible, du SMT et du DXY.")
+    st.markdown("<p style='text-align:center; color:#222; letter-spacing:3px; margin-top:50px;'>AWAITING 6 QUANTUM DATASETS (1D/15M)...</p>", unsafe_allow_html=True)
