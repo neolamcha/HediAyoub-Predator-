@@ -1,59 +1,84 @@
 import streamlit as st
 
-# CONFIGURATION PREDATOR PRO
-st.set_page_config(page_title="PREDATOR AI | SCANNER", layout="wide")
+# CONFIGURATION DU TERMINAL PREDATOR
+st.set_page_config(page_title="PREDATOR AI | ORGANIZED SCANNER", layout="wide")
 
-# STYLE NOIR LUXE & INTERFACE CAMERA
+# STYLE NOIR MAT & GRILLES DE TRI
 st.markdown("""
 <style>
-    .stApp { background-color: #000000; color: #ffffff; }
-    .stCameraInput { border: 2px solid #ff3131; border-radius: 10px; }
-    .upload-box { border: 1px dashed #444; padding: 20px; border-radius: 10px; }
+    .stApp { background-color: #000000; color: #ffffff; font-family: 'Courier New', monospace; }
+    .asset-row { border-bottom: 1px solid #222; padding: 10px 0; }
+    .status-cell { text-align: center; padding: 5px; border-radius: 5px; font-size: 12px; }
+    .ready { background-color: #004400; color: #00ff00; border: 1px solid #00ff00; }
+    .missing { background-color: #220000; color: #ff3131; border: 1px solid #ff3131; }
 </style>
 """, unsafe_allow_html=True)
 
 if "auth" not in st.session_state: st.session_state.auth = False
 
 if not st.session_state.auth:
-    st.title("PREDATOR AI")
+    st.title("🛡️ PREDATOR AI ACCESS")
     if st.text_input("ALPHA KEY", type="password") == "PREDATOR2026": 
         st.session_state.auth = True
         st.rerun()
 else:
-    st.markdown("<h1 style='color:#ff3131;'>🎯 PREDATOR VISION : SCANNER</h1>", unsafe_allow_html=True)
+    st.title("🤖 MATRICE DE SCAN QUANTITATIF")
+    st.write("Fournissez les 3 Timeframes pour les 10 actifs. L'IA fusionnera ces données avec l'Orderflow YouTube.")
+
+    # 1. LISTE DES 10 ACTIFS SÉLECTIONNÉS
+    assets = ["NASDAQ (NQ)", "GOLD (XAU)", "DXY", "EURUSD", "GBPUSD", "US30", "BITCOIN", "OIL (WTI)", "ETH", "NVDA"]
+    timeframes = ["1D (Macro)", "1H (Structure)", "15M (Exécution)"]
+
+    # Initialisation de la mémoire du scan
+    if 'scans' not in st.session_state:
+        st.session_state.scans = {asset: {tf: None for tf in timeframes} for asset in assets}
+
+    # --- SECTION INPUT (L'APPAREIL PHOTO) ---
+    with st.expander("📸 OUVRIR LE SCANNER DE GRAPHIQUES", expanded=True):
+        col_a, col_t, col_c = st.columns([1, 1, 2])
+        with col_a:
+            selected_asset = st.selectbox("Actif à photographier :", assets)
+        with col_t:
+            selected_tf = st.selectbox("Timeframe :", timeframes)
+        with col_c:
+            img = st.camera_input("Scanner le graphique")
+            if img:
+                st.session_state.scans[selected_asset][selected_tf] = img
+                st.success(f"Image enregistrée pour {selected_asset} en {selected_tf}")
+
+    st.divider()
+
+    # --- SECTION ORGANISATION (LE TABLEAU DE BORD) ---
+    st.subheader("📊 ÉTAT DE LA MATRICE DE CONFLUENCE")
     
-    col_input, col_verdict = st.columns([1, 1])
+    # En-tête du tableau
+    h_col1, h_col2, h_col3, h_col4, h_col5 = st.columns([1.5, 1, 1, 1, 1.5])
+    h_col1.write("**ACTIF**")
+    h_col2.write("**1D MACRO**")
+    h_col3.write("**1H STRUCT**")
+    h_col4.write("**15M EXEC**")
+    h_col5.write("**VERDICT IA**")
 
-    with col_input:
-        st.subheader("📷 SCANNER LES GRAPHIQUES")
+    for asset in assets:
+        c1, c2, c3, c4, c5 = st.columns([1.5, 1, 1, 1, 1.5])
+        c1.write(f"**{asset}**")
         
-        # Option 1 : Appareil photo en direct
-        picture = st.camera_input("Prendre une photo de ton écran TradingView")
-        
-        st.markdown("---")
-        
-        # Option 2 : Importation classique
-        uploaded_files = st.file_uploader("Ou importer tes captures (1H, 15M, 5M)", accept_multiple_files=True)
+        # Affichage des statuts pour chaque TF
+        for i, (tf, col) in enumerate(zip(timeframes, [c2, c3, c4])):
+            if st.session_state.scans[asset][tf]:
+                col.markdown('<div class="status-cell ready">COMPLET</div>', unsafe_allow_html=True)
+            else:
+                col.markdown('<div class="status-cell missing">VIDE</div>', unsafe_allow_html=True)
 
-    with col_verdict:
-        st.subheader("🤖 ANALYSE NEURALE")
-        
-        if picture or uploaded_files:
-            st.info("Traitement de l'image... Corrélation avec les flux YouTube en cours.")
-            # Simulation du moteur de décision
-            st.markdown("""
-                <div style="border:2px solid #00ff00; padding:20px; border-radius:10px; background:#000b00;">
-                    <h2 style="color:#00ff00; text-align:center;">SIGNAL A+ VALIDÉ</h2>
-                    <p><b>SOURCES :</b> Vision Mobile + Orderflow YouTube</p>
-                    <p><b>CONFIRMATION :</b> Convergence Delta/SMC</p>
-                    <hr style='border-color:#111;'>
-                    <h3 style='text-align:center;'>NASDAQ : BUY / LONG</h3>
-                    <p style='text-align:center; font-size:20px;'>TP : 24780 | SL : 24610</p>
-                </div>
-            """, unsafe_allow_html=True)
+        # Calcul du verdict pour cet actif
+        is_ready = all(st.session_state.scans[asset][tf] for tf in timeframes)
+        if is_ready:
+            c5.button(f"VOIR SIGNAL {asset}", key=f"btn_{asset}", type="primary")
         else:
-            st.warning("Prêt pour le scan. Utilise l'appareil photo ou importe tes graphiques.")
+            c5.write("⏳ En attente de données...")
 
-    st.sidebar.markdown("### SYSTÈME")
-    st.sidebar.write("L'IA fusionne tes photos avec les lives :")
-    st.sidebar.write("`jc1Ds-Uz6gE` | `XZs8kRuL12k` | `kvhRserj8ME` | `69jd1dOq4C8`")
+    # --- SECTION RÉSULTAT FINAL ---
+    st.divider()
+    st.sidebar.markdown("### 📡 FLUX YOUTUBE LIVE")
+    st.sidebar.write("L'IA analyse les flux en arrière-plan dès qu'un actif est 'COMPLET'.")
+    st.sidebar.caption("NQ: jc1Ds-Uz6gE | ES: XZs8kRuL12k")
