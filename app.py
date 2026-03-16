@@ -2,98 +2,92 @@ import streamlit as st
 import easyocr
 import numpy as np
 from PIL import Image
-import re
 import random
+import time
 
 # ==========================================
-# 1. CONFIGURATION QUANTUM & NATIVE PWA
+# 1. SETUP & NETTOYAGE RADICAL
 # ==========================================
-st.set_page_config(page_title="HEDI AYOUB QUANTUM", layout="centered")
+st.set_page_config(
+    page_title="HEDI AYOUB", 
+    layout="centered", 
+    initial_sidebar_state="collapsed"
+)
 
-# Injection des balises pour simuler une App Native sur iPhone
-st.markdown("""
-    <head>
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-        <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2922/2922510.png">
-    </head>
-""", unsafe_allow_html=True)
-
-@st.cache_resource
-def load_ocr():
-    return easyocr.Reader(['en'])
-
-reader = load_ocr()
-
-# --- CSS EXTRÊME : LOOK MAQUETTE NATIVE ---
+# --- CSS SUPRÊME : NETTOYAGE INTERFACE ---
 st.markdown("""
     <style>
+        /* Supprime le Header Streamlit (GitHub, Deploy, Menu) */
+        header {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        #MainMenu {visibility: hidden !important;}
+        .stDeployButton {display:none !important;}
+        
+        /* Supprime les paddings inutiles en haut pour le plein écran */
+        .block-container {
+            padding-top: 10px !important;
+            padding-bottom: 0px !important;
+            max-width: 400px;
+        }
+
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;400;900&display=swap');
         
-        /* Fond OLED Profond */
-        .stApp { 
-            background-color: #030608; 
-            color: #FFFFFF; 
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Ajustement pour l'encoche iPhone (Safe Area) */
-        .block-container { 
-            padding-top: 60px !important; 
-            max-width: 420px; 
-        }
-
-        /* HEADER NOM : HEDI (Ligne 1) AYOUB (Ligne 2) */
-        .identity-header { text-align: center; margin-bottom: 40px; }
-        .first-name { letter-spacing: 18px; font-size: 40px; font-weight: 100; margin: 0; color: #FFF; line-height: 1; }
-        .last-name { letter-spacing: 18px; font-size: 40px; font-weight: 100; margin: 0; color: #FFF; line-height: 1.3; }
-        .quantum-sub { color: #FF3131; letter-spacing: 4px; font-size: 10px; margin-top: 15px; font-weight: bold; opacity: 0.9; }
+        .stApp { background-color: #030608; color: #FFFFFF; font-family: 'Inter', sans-serif; }
         
-        /* SYSTEM LOCK : ROUGE NÉON MAQUETTE */
+        /* HEADER NOM : HEDI / AYOUB */
+        .identity-header { text-align: center; margin-bottom: 25px; }
+        .first-name { letter-spacing: 15px; font-size: 38px; font-weight: 100; margin: 0; color: #FFF; line-height: 1; }
+        .last-name { letter-spacing: 15px; font-size: 38px; font-weight: 100; margin: 0; color: #FFF; line-height: 1.2; }
+        .quantum-sub { color: #FF3131; letter-spacing: 3px; font-size: 10px; margin-top: 10px; font-weight: bold; }
+        
+        /* BOITE LOCK AVEC GLOW ROUGE */
         .lock-container {
             border: 2px solid #FF3131;
             border-radius: 20px;
-            padding: 22px;
-            background: rgba(255, 49, 49, 0.04);
+            padding: 20px;
+            background: rgba(255, 49, 49, 0.05);
             display: flex; align-items: center; justify-content: center; gap: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 0 25px rgba(255, 49, 49, 0.25);
+            margin-bottom: 20px;
+            box-shadow: 0 0 25px rgba(255, 49, 49, 0.2);
         }
-        .lock-icon { font-size: 35px; color: #FF3131; filter: drop-shadow(0 0 10px #FF3131); }
-        .lock-title { color: #FFF; font-weight: 900; font-size: 16px; letter-spacing: 1px; }
-        .lock-subtitle { color: #FF3131; font-size: 12px; font-weight: bold; }
+        .lock-icon { font-size: 30px; filter: drop-shadow(0 0 5px #FF3131); }
+        .lock-title { color: #FFF; font-weight: bold; font-size: 14px; }
+        .lock-subtitle { color: #FF3131; font-size: 11px; font-weight: bold; }
         
-        /* INFO CARD : CYAN NÉON MAQUETTE */
+        /* INFO CARD AVEC BORDURE CYAN */
         .info-card {
-            border: 1.5px solid rgba(0, 210, 255, 0.4);
+            border: 1.5px solid #00D2FF;
             border-radius: 20px;
-            padding: 22px;
+            padding: 18px;
             background: rgba(0, 210, 255, 0.02);
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.15);
-            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.15);
+            margin-bottom: 20px;
         }
-        .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0, 210, 255, 0.1); padding: 14px 0; }
-        .info-label { color: #666; font-size: 11px; font-weight: 900; letter-spacing: 1px; }
-        .info-val { color: #FFF; font-size: 13px; font-weight: bold; }
+        .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0, 210, 255, 0.1); padding: 10px 0; font-size: 13px; }
+        .info-label { color: #555; font-weight: 900; text-transform: uppercase; }
+        .info-val { color: #FFF; font-weight: bold; }
 
-        /* UPLOAD ZONE STYLE MAQUETTE */
+        /* ZONE UPLOAD DISCRÈTE */
         .upload-area {
             border: 2px dashed rgba(255, 49, 49, 0.3);
             border-radius: 25px;
-            padding: 50px 20px;
+            padding: 30px;
             text-align: center;
             background: rgba(255, 49, 49, 0.01);
         }
-        .upload-icon { font-size: 50px; color: #FF3131; opacity: 0.3; margin-bottom: 15px; }
         
-        /* Masquer interface Web */
-        #MainMenu, footer, .stDeployButton { visibility: hidden; }
-        .stSelectbox div[data-baseweb="select"] { background-color: #030608 !important; border-color: #222 !important; border-radius: 15px; }
+        /* Style des inputs Streamlit pour rester sombre */
+        .stSelectbox div[data-baseweb="select"] {
+            background-color: #030608 !important;
+            border: 1px solid #333 !important;
+            color: white !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER : HEDI AYOUB ---
+# --- CONTENU DE L'APP ---
+
+# Header
 st.markdown("""
     <div class='identity-header'>
         <div class='first-name'>H E D I</div>
@@ -102,7 +96,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# --- SYSTEM LOCK ---
+# Lock Box
 st.markdown("""
     <div class='lock-container'>
         <div class='lock-icon'>🔒</div>
@@ -113,19 +107,17 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# --- ASSETS ---
+# Asset Selection
 assets = {
     "US30 (DOW JONES)": {"smt": "NQ / ES", "chef": "DXY"},
     "NASDAQ (NQ)": {"smt": "ES (S&P500)", "chef": "DXY"},
-    "BITCOIN (BTC)": {"smt": "ETH (ETHEREUM)", "chef": "DXY/USDT"},
-    "GOLD (XAU)": {"smt": "XAG (SILVER)", "chef": "DXY"},
-    "EURUSD": {"smt": "GBPUSD", "chef": "DXY"}
+    "GOLD (XAU)": {"smt": "XAG (SILVER)", "chef": "DXY"}
 }
 
 target = st.selectbox("", list(assets.keys()), label_visibility="collapsed")
 info = assets[target]
 
-# --- INFO CARD ---
+# Info Card
 st.markdown(f"""
     <div class='info-card'>
         <div class='info-row'><span class='info-label'>🎯 TARGET</span><span class='info-val'>{target}</span></div>
@@ -134,20 +126,19 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# --- UPLOAD SECTION ---
-uploaded_files = st.file_uploader("", accept_multiple_files=True, label_visibility="collapsed")
+# Upload Section
+uploaded = st.file_uploader("", accept_multiple_files=True, label_visibility="collapsed")
 
-if uploaded_files:
-    count = len(uploaded_files)
-    st.progress(min(count / 6, 1.0))
-    if count >= 6:
-        if st.button("🔥 TAP TO DECRYPT DATA", use_container_width=True):
-            st.success("QUANTUM ANALYSIS ACTIVE")
-else:
+if not uploaded:
     st.markdown("""
         <div class='upload-area'>
-            <div class='upload-icon'>☁️</div>
-            <p style='color: #555; font-size: 11px; letter-spacing:1px; margin:0;'>UPLOADING 6 REQUIRED DATASETS</p>
-            <p style='color: #FF3131; font-size: 10px; font-weight:bold; margin-top:10px;'>TAP TO COLLECT DATA</p>
+            <div style='font-size:30px; margin-bottom:10px;'>☁️</div>
+            <p style='color:#666; font-size:11px; margin:0;'>UPLOADING 6 REQUIRED DATASETS</p>
         </div>
     """, unsafe_allow_html=True)
+else:
+    count = len(uploaded)
+    st.progress(min(count/6, 1.0))
+    if count >= 6:
+        if st.button("🔥 START QUANTUM SCAN", use_container_width=True):
+            st.balloons()
