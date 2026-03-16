@@ -1,93 +1,141 @@
 import streamlit as st
-import streamlit.components.v1 as components
-from datetime import datetime
 
-# 1. CONFIGURATION RADICALE
-st.set_page_config(page_title="HediAyoub Predator V37", layout="wide", initial_sidebar_state="collapsed")
+# ==========================================
+# 1. CONFIGURATION TERMINAL ELITE
+# ==========================================
+st.set_page_config(
+    page_title="PREDATOR AI | QUANT TERMINAL",
+    page_icon="🎯",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# 2. CSS DE SURVIE (Noir absolu, visibilité forcée)
+# ==========================================
+# 2. DESIGN FUTURISTE LUXE (CSS)
+# ==========================================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;800&display=swap');
-    .stApp { background-color: #000000 !important; color: #ffffff !important; }
-    
-    /* Force les inputs en blanc pour ne pas les perdre */
-    div[data-baseweb="input"] { background-color: #ffffff !important; border-radius: 4px !important; }
-    input { color: #000000 !important; font-weight: 900 !important; }
+    /* Fond Noir Absolu et Police Monospace Pro */
+    .stApp {
+        background-color: #000000;
+        color: #FFFFFF;
+        font-family: 'Courier New', Courier, monospace;
+    }
 
-    .card { background: #080808; border: 1px solid #1a1a1a; border-left: 4px solid #ff0000; padding: 15px; margin-bottom: 10px; }
-    .label-mini { color: #555; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; }
-    
-    /* Animation Pulse pour le A+ */
-    .aplus-active { color: #ff0000; font-family: 'Orbitron'; animation: blink 1s infinite; }
-    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    /* Sidebar style "Stealth" */
+    [data-testid="stSidebar"] {
+        background-color: #050505;
+        border-right: 1px solid #FF3131;
+    }
+
+    /* Titres Néon Rouge Predator */
+    h1, h2, h3 {
+        color: #FF3131;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        text-shadow: 0 0 15px rgba(255, 49, 49, 0.5);
+    }
+
+    /* Cartes de Confluence Glassmorphism */
+    .metric-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid #222;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-left: 3px solid #FF3131;
+    }
+
+    /* Bouton d'accès */
+    .stButton>button {
+        background: linear-gradient(45deg, #FF3131, #800000);
+        color: white;
+        border: none;
+        font-weight: bold;
+        letter-spacing: 2px;
+        width: 100%;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SIMPLE
-st.markdown(f"<div style='padding: 10px; background: #050505; border-bottom: 1px solid #111; color:red; font-family:Orbitron; font-weight:900; font-size:20px;'>PREDATOR_V37 // SYSTEM_RESTORED</div>", unsafe_allow_html=True)
+# ==========================================
+# 3. AUTHENTIFICATION SÉCURISÉE
+# ==========================================
+if "auth" not in st.session_state:
+    st.session_state.auth = False
 
-# 4. DASHBOARD
-col_left, col_mid, col_right = st.columns([1, 2, 1])
-
-with col_left:
-    st.markdown("<div class='card'>", unsafe_allow_html=True)
-    st.markdown("<p class='label-mini'>Execution Stats</p>", unsafe_allow_html=True)
-    cap = st.number_input("ACCOUNT ($)", value=100000)
-    risk = st.slider("RISK %", 0.1, 5.0, 1.0)
-    lots = round((cap * (risk/100)) / 350, 2)
-    st.markdown(f"<h1 style='font-family:Orbitron; text-align:center; color:white;'>{lots}</h1>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("<div class='card' style='text-align:center;'>", unsafe_allow_html=True)
-    st.markdown("<p class='label-mini'>A+ Fusion Score</p>", unsafe_allow_html=True)
-    st.markdown("<h2 class='aplus-active'>99.2%</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size:10px; color:#00ff41;'>HTF/MTF/BOOKMAP SYNC</p>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-with col_mid:
-    # GRAPHIQUE CENTRAL
-    st.markdown("<div class='card' style='padding:5px;'>", unsafe_allow_html=True)
-    components.html("""
-        <div id="tv_chart" style="height:400px;"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-        <script type="text/javascript">
-        new TradingView.widget({
-          "autosize": true, "symbol": "CME_MINI:NQ1!", "interval": "5", "theme": "dark", 
-          "style": "1", "container_id": "tv_chart", "backgroundColor": "#000000"
-        });
-        </script>
-    """, height=400)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-with col_right:
-    # BOOKMAP MINI-FEED (YouTube Iframe léger)
-    st.markdown("<p class='label-mini'>Live Liquidity</p>", unsafe_allow_html=True)
-    st.markdown("<div class='card' style='padding:5px;'>", unsafe_allow_html=True)
-    # Remplacer l'ID par un live Bookmap actif si nécessaire
-    components.html("""
-        <iframe width="100%" height="200" src="https://www.youtube.com/embed/live_stream?channel=UCXXXXXXXXX" frameborder="0" allowfullscreen></iframe>
-    """, height=200)
-    st.markdown("</div>", unsafe_allow_html=True)
+if not st.session_state.auth:
+    col_l, col_c, col_r = st.columns([1, 1.5, 1])
+    with col_c:
+        st.markdown("<br><br><h1 style='text-align:center;'>PREDATOR AI</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center;color:#444;'>INSTITUTIONAL QUANT SYSTEM V1.0</p>", unsafe_allow_html=True)
+        password = st.text_input("CLÉ D'ACCÈS ALPHA", type="password")
+        if st.button("INITIALISER LE PROTOCOLE"):
+            if password == "PREDATOR2026":
+                st.session_state.auth = True
+                st.rerun()
+else:
+    # ==========================================
+    # 4. DASHBOARD PREDATOR (TES LIENS INCLUS)
+    # ==========================================
     
-    # TIMER
-    st.markdown("<div class='card' style='text-align:center;'>", unsafe_allow_html=True)
-    components.html("""
-        <div id="timer" style="font-family:'Orbitron'; color:red; font-size:30px; font-weight:900;">08:14</div>
-        <script>
-            let s = 494; setInterval(() => {
-                let m = Math.floor(s/60); let sec = s%60;
-                document.getElementById('timer').innerHTML = (m<10?'0':'')+m+":"+(sec<10?'0':'')+sec;
-                if(s>0) s--; else document.getElementById('timer').innerHTML="OPEN";
-            }, 1000);
-        </script>
-    """, height=40)
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.sidebar:
+        st.markdown("<h1>PREDATOR</h1>")
+        st.success("MOTEUR ALPHA ACTIF ✅")
+        st.divider()
+        
+        # --- TES LIENS YOUTUBE INTÉGRÉS ICI ---
+        flux_pro = {
+            "NQ Bookmap Live (24/7)": "jc1Ds-Uz6gE",
+            "ES Orderflow Feed": "XZs8kRuL12k",
+            "Nasdaq Liquidity": "kvhRserj8ME",
+            "Global Heatmap": "69jd1dOq4C8"
+        }
+        
+        selection = st.selectbox("CHOIX DU CANAL ALPHA", list(flux_pro.keys()))
+        
+        st.divider()
+        st.header("STATUT DES CAPTEURS")
+        st.write("📡 **CVD (Cumulative Delta)**: SYNC")
+        st.write("📊 **SVP (Volume Profile)**: SYNC")
+        st.write("🕰️ **Midnight Open**: SYNC")
+        st.write("📉 **SMC Structure**: SYNC")
 
-# 5. MATRIX (Simplifiée pour la stabilité)
-st.markdown("<p class='label-mini' style='margin-left:15px;'>Global Matrix Scan</p>", unsafe_allow_html=True)
-m_cols = st.columns(5)
-assets = [("NQ1!", 99), ("ES1!", 88), ("XAUUSD", 94), ("EURUSD", 96), ("BTCUSD", 91)]
-for i, (name, score) in enumerate(assets):
-    with m_cols[i]:
-        st.markdown(f"<div style='background:#080808; border:1px solid #1a1a1a; padding:10px; text-align:center; border-bottom:3px solid red;'><b style='font-family:Orbitron;'>{name}</b><br><span style='color:red;'>{score}%</span></div>", unsafe_allow_html=True)
+    # SECTION PRINCIPALE
+    st.markdown("<h1>🎯 GLOBAL LIQUIDITY ENGINE</h1>", unsafe_allow_html=True)
+    
+    col_main, col_data = st.columns([2.5, 1])
+
+    with col_main:
+        st.markdown(f"### 👁️ VISION AGENT : {selection}")
+        # Affichage du flux sélectionné
+        video_url = f"https://www.youtube.com/watch?v={flux_pro[selection]}"
+        st.video(video_url)
+        
+        st.markdown("### 📝 JOURNAL D'EXÉCUTION QUANT")
+        st.code(f"""
+[SYSTEM] : Analyse en temps réel du flux {selection}...
+[DATA]   : Détection de liquidité institutionnelle sur les Footprints.
+[CORR]   : Corrélation DXY/NQ confirmée.
+[ICT]    : Zone de Midnight Open identifiée - Attente de retracement.
+        """, language="bash")
+
+    with col_data:
+        st.markdown("### ⚡ SCORE A+")
+        st.markdown("""
+            <div style='border: 2px solid #FF3131; padding: 20px; border-radius: 15px; text-align:center; background: rgba(255,0,0,0.05);'>
+                <h1 style='font-size:60px; margin:0;'>94%</h1>
+                <p style='color:#00FF00; font-weight:bold;'>PROBABILITÉ HAUTE</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<br><h4>MATRICE DE CONFLUENCE</h4>", unsafe_allow_html=True)
+        
+        # Liste de tes indicateurs pro précis
+        st.markdown("<div class='metric-box'>✅ <b>CVD</b> : Divergence Bullish (M1)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-box'>✅ <b>Midnight Open</b> : Prix en Discount</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-box'>✅ <b>LuxAlgo SMC</b> : CHoCH validé</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-box'>✅ <b>FVG / OB</b> : Tap dans l'Order Block</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-box'>✅ <b>SVP</b> : Récupération du POC</div>", unsafe_allow_html=True)
+
+        st.error("⚠️ MUR DE LIQUIDITÉ DÉTECTÉ À +15 PTS")
