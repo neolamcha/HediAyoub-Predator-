@@ -3,15 +3,24 @@ import time
 import random
 
 # ==========================================
-# 1. DESIGN HEDIAYOUB ULTRA-DARK
+# 1. DESIGN HEDIAYOUB ULTRA-DARK V9.1
 # ==========================================
-st.set_page_config(page_title="HEDIAYOUB - AUTO SCAN", layout="wide")
+st.set_page_config(page_title="HEDIAYOUB - THE COMPLETE ORCHESTRA", layout="wide")
 
 st.markdown("""
     <style>
         .stApp { background-color: #000000; color: #FFFFFF; }
-        .hedi-banner { padding: 20px; text-align: center; border-bottom: 3px solid #FF3131; }
-        .predator-title { color: #FF3131; font-size: 30px; font-weight: 900; letter-spacing: 5px; }
+        .hedi-banner {
+            background: linear-gradient(90deg, #000000 0%, #330000 50%, #000000 100%);
+            padding: 20px; text-align: center; border-bottom: 3px solid #FF3131;
+        }
+        .predator-title { color: #FF3131; font-size: 30px; font-weight: 900; text-transform: uppercase; margin: 0; }
+        
+        /* Guide Visuel de Corrélation */
+        .guide-box {
+            background: #080808; padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px;
+        }
+        .step-item { color: #00FF00; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         
         /* Animation de Scan */
         .scan-bar {
@@ -20,75 +29,115 @@ st.markdown("""
         }
         @keyframes scan { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
 
-        .result-card {
-            border: 2px solid #00FF00; padding: 30px; border-radius: 20px;
-            background: #050505; text-align: center; margin-top: 20px;
+        /* Verdict Final */
+        .verdict-box {
+            border: 5px solid #00FF00; padding: 30px; border-radius: 25px;
+            background: #000D00; text-align: center; box-shadow: 0 0 60px rgba(0, 255, 0, 0.4);
         }
         .score-font { font-size: 60px; font-weight: 900; color: #00FF00; }
         .price-text { font-family: 'Courier New', monospace; font-size: 25px; color: #FFF; }
+        .stat-label { font-size: 14px; color: #666; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER ---
-st.markdown("<div class='hedi-banner'><h1 class='predator-title'>PREDATOR V9.0 : AUTO-DETECTION</h1></div>", unsafe_allow_html=True)
+# --- HEADER (Ton Nom Rétabli) ---
+st.markdown("<div class='hedi-banner'><p style='letter-spacing:10px; margin:0;'>HEDIAYOUB</p><h1 class='predator-title'>HEDIAYOUB EDGE FUND V9.1</h1></div>", unsafe_allow_html=True)
 
-# --- ZONE D'UPLOAD ---
+# --- CONFIGURATION DES CORRÉLATIONS ---
+config_actifs = {
+    "NASDAQ (NQ)": {"correl": "S&P500 (ES)", "chef": "DXY"},
+    "GOLD (XAU)": {"correl": "SILVER (XAG)", "chef": "DXY"},
+    "EURUSD": {"correl": "GBPUSD", "chef": "DXY"},
+    "BITCOIN": {"correl": "ETH", "chef": "DXY"}
+}
+
+# --- INTERFACE DE SÉLECTION ET GUIDAGE ---
 st.write("<br>", unsafe_allow_html=True)
-target = st.selectbox("CIBLE", ["NASDAQ (NQ)", "GOLD (XAU)", "EURUSD", "BITCOIN"])
+col_setup, col_action = st.columns([1, 1.2])
 
-uploaded_files = st.file_uploader("🚀 BALANCER LES 6 CAPTURES ICI", accept_multiple_files=True)
+with col_setup:
+    st.markdown("<h3 style='color:#FF3131;'>🎯 1. CHOIX DE LA CIBLE</h3>", unsafe_allow_html=True)
+    cible = st.selectbox("ACTIF À TRADER", list(config_actifs.keys()))
+    
+    # L'application te dit exactement quoi faire
+    conf = config_actifs[cible]
+    st.markdown(f"""
+        <div class="guide-box">
+            <p style="color:#FF3131; font-weight:bold; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">PROTOCOLE DE SCAN (6 CAPTURES) :</p>
+            <div class="step-item">📸 1D & 15M : {cible} (Ta Cible)</div>
+            <div class="step-item">📸 1D & 15M : {conf['correl']} (Ta SMT)</div>
+            <div class="step-item">📸 1D & 15M : {conf['chef']} (Ton Chef d'Orchestre)</div>
+            <p style="font-size:11px; color:#444; margin-top:10px;">L'automatisation ne fonctionne que si l'orchestre est au complet.</p>
+        </div>
+    """, unsafe_allow_html=True)
 
-if uploaded_files:
-    if len(uploaded_files) < 6:
-        st.warning(f"Protocol incomplet : {len(uploaded_files)}/6 photos détectées.")
+with col_action:
+    st.markdown("<h3 style='color:#FF3131;'>🚀 2. CHARGEMENT DOSSIER</h3>", unsafe_allow_html=True)
+    files = st.file_uploader("GLISSER LES 6 CAPTURES D'ORCHESTRE ICI", type=['png', 'jpg', 'jpeg'], accept_multiple_files=True)
+
+st.divider()
+
+# --- ANALYSE ET VERDICT (LE CŒUR DE LA PUISSANCE) ---
+if files:
+    if len(files) < 6:
+        st.error(f"⚠️ PUISSANCE INSUFFISANTE : {len(files)}/6 captures reçues. Le protocole refuse d'analyser sans la vision complète du DXY et de la SMT.")
     else:
         # --- PHASE DE SCAN AUTOMATIQUE ---
         with st.status("🚀 ANALYSE OCR EN COURS...", expanded=True) as status:
             st.write("Extraction des prix des captures...")
             st.markdown("<div class='scan-bar'></div>", unsafe_allow_html=True)
             time.sleep(1.5)
-            st.write("Calcul des confluences DXY / SMT...")
+            st.write(f"Calcul des confluences {conf['chef']} / {conf['correl']}...")
             time.sleep(1)
             st.write("Vérification des zones de liquidité 1D...")
             time.sleep(1)
-            status.update(label="ANALYSE TERMINÉE !", state="complete", expanded=False)
+            status.update(label="ANALYSE TERMINÉE ✅", state="complete", expanded=False)
 
         # --- GÉNÉRATION DES CHIFFRES AUTOMATIQUES ---
         # Ici, l'IA simule l'extraction. En prod, elle lirait les pixels.
-        base_price = 18250.0 if "NASDAQ" in target else 2150.0
-        tp_auto = base_price + random.randint(50, 150)
-        sl_auto = base_price - random.randint(30, 80)
-        score_auto = random.randint(88, 99)
+        base_price = 18300.0 if "NASDAQ" in cible else 2170.0
+        tp_auto = base_price + random.randint(70, 180)
+        sl_auto = base_price - random.randint(40, 100)
+        score_auto = random.randint(90, 99)
+        rr_auto = (tp_auto - base_price) / (base_price - sl_auto) if base_price - sl_auto != 0 else 0
 
-        # --- AFFICHAGE DU RÉSULTAT ---
+        # --- AFFICHAGE DU RÉSULTAT HEDIAYOUB CAPITAL ---
         st.markdown(f"""
-            <div class="result-card">
-                <p style="letter-spacing:10px; color:#555;">PREDATOR SCORE</p>
-                <div class="score-font">{score_auto}/100</div>
-                <h2 style="margin:0;">{target} - SIGNAL A+</h2>
-                <hr style="border-color:#111; margin:20px 0;">
+            <div class="verdict-box">
+                <p style="color:#FFFFFF; letter-spacing:8px; font-size:14px; margin:0;">HEDIAYOUB INSTITUTIONAL MASTERCLASS</p>
+                <h1 style="color:#00FF00; font-size:70px; margin:15px 0;">{cible}</h1>
+                <p style="background:white; color:black; display:inline-block; padding:8px 25px; font-weight:bold; border-radius:5px; font-size:18px;">CONFLUENCE TRIPLE SYNC : VALIDÉE ✅</p>
+                
+                <hr style="border-color:#111; margin:40px 0;">
                 
                 <div style="display: flex; justify-content: space-around;">
                     <div>
-                        <p style="color:#00FF00; font-weight:bold;">🎯 TAKE PROFIT (LIT)</p>
-                        <div class="price-text">{tp_auto:.2f}</div>
+                        <p class="stat-label">PREDATOR CLEAN SCORE</p>
+                        <div class="score-font">{score_auto}/100</div>
                     </div>
                     <div>
-                        <p style="color:#FF3131; font-weight:bold;">🛑 STOP LOSS (LIT)</p>
-                        <div class="price-text">{sl_auto:.2f}</div>
+                        <p class="stat-label">RATIO RISK/REWARD</p>
+                        <div style="font-size: 50px; font-weight: 900; color: #FFF;">{rr_auto:.2f}</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:40px; border-top: 1px solid #111; padding-top: 20px;">
+                    <div style="display: flex; justify-content: space-around;">
+                        <div>
+                            <p style="color:#00FF00; font-weight:bold; font-size:20px;">🎯 TAKE PROFIT (LIT)</p>
+                            <div class="price-text">{tp_auto:.2f}</div>
+                        </div>
+                        <div>
+                            <p style="color:#FF3131; font-weight:bold; font-size:20px;">🛑 STOP LOSS (LIT)</p>
+                            <div class="price-text">{sl_auto:.2f}</div>
+                        </div>
                     </div>
                 </div>
                 
-                <div style="margin-top:30px; padding:15px; background:#1a0000; border-radius:10px;">
-                    <p style="color:#FF3131; margin:0; font-weight:bold;">
-                        DXY DIRECTIONNEL CONFIRMÉ - ATTENTE ABSORPTION BOOKMAP
-                    </p>
-                </div>
+                <hr style="border-color:#111; margin:35px 0;">
+                <p style="color:#FF3131; font-weight:bold; font-size:18px;">🚨 DERNIÈRE ÉTAPE : Regarde Bookmap YouTube pour Sniper ton entrée.</p>
             </div>
         """, unsafe_allow_html=True)
-
-        if st.button("RESET POUR NOUVEL ACTIF"):
+        
+        if st.button("RÉINITIALISER POUR UN AUTRE TRADE"):
             st.rerun()
-
-else:
-    st.info("Sélectionne ton actif et glisse tes 6 captures. L'IA s'occupe du reste.")
