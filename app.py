@@ -1,192 +1,148 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import time
+import streamlit.components.v1 as components
 
-# 1. ARCHITECTURE HAUTE PERFORMANCE
-st.set_page_config(
-    page_title="HediAyoub - The Predator", 
-    page_icon="🎯", 
-    layout="wide", 
-    initial_sidebar_state="collapsed"
-)
+# 1. CORE ENGINE CONFIGURATION
+st.set_page_config(page_title="HediAyoub - The Predator", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. LE MOTEUR DE RENDU "ULTRA-GLOW" (CSS PROPRIÉTAIRE)
+# 2. DESIGN : NEURAL BLACK-OPS (Ultra-HD Professional)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&family=JetBrains+Mono:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;500;700&display=swap');
     
-    /* Fond Noir Profond & Grain */
-    .stApp {
-        background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
-        color: #e0e0e0;
-        font-family: 'Inter', sans-serif;
-    }
-
-    /* Masquage des éléments Streamlit parasites */
+    .stApp { background: #000; color: #eee; font-family: 'JetBrains Mono', monospace; }
     #MainMenu, footer, header {visibility: hidden;}
-    .block-container {padding-top: 2rem; padding-bottom: 0rem;}
+    .block-container {padding: 1.5rem 4rem;}
 
-    /* Cartes Glassmorphism */
-    .predator-card {
-        background: rgba(10, 10, 10, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        border-radius: 4px;
-        padding: 24px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-        backdrop-filter: blur(10px);
-        margin-bottom: 15px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .predator-card::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; width: 2px; height: 100%;
-        background: #ff0000; /* Ligne d'accent Predator */
+    .p-card {
+        background: linear-gradient(145deg, #050505 0%, #010101 100%);
+        border: 1px solid rgba(255, 255, 255, 0.02);
+        border-radius: 4px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+        margin-bottom: 25px; position: relative;
     }
 
-    /* Metrics & Data */
-    .metric-value {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 28px;
-        font-weight: 700;
-        color: #ffffff;
-        text-shadow: 0 0 10px rgba(255,255,255,0.2);
-    }
-    .metric-label {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 10px;
-        letter-spacing: 2px;
-        color: #555;
-        text-transform: uppercase;
+    .focus-border {
+        position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+        background: #ff0000; box-shadow: 0 0 10px #ff0000;
     }
 
-    /* Chrono Cyber-Agressif */
-    .chrono-display {
-        font-family: 'Orbitron', sans-serif;
-        color: #ff0000;
-        font-size: 64px;
-        font-weight: 700;
-        text-align: center;
-        letter-spacing: -2px;
-        text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-    }
-
-    /* Input & Sidebar Custom */
-    .stNumberInput div div input { background-color: #000 !important; color: white !important; border: 1px solid #222 !important; }
-    .stSlider div div { color: #ff0000 !important; }
-
+    .label-alpha { color: #444; font-size: 10px; text-transform: uppercase; letter-spacing: 4px; font-weight: 700; }
+    .value-alpha { color: #fff; font-size: 24px; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+    .scan-text { color: #ff0000; font-size: 11px; font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. LOGIQUE D'ACCÈS IMMERSIVE
 if "auth" not in st.session_state: st.session_state.auth = False
 
 if not st.session_state.auth:
-    c1, c2, c3 = st.columns([1, 1, 1])
-    with c2:
-        st.markdown("<br><br><br><br>", unsafe_allow_html=True)
-        st.markdown("""
-            <div style='text-align:center;'>
-                <h1 style='font-family:Orbitron; letter-spacing:10px; color:white; margin-bottom:0;'>HediAyoub</h1>
-                <p style='color:red; letter-spacing:5px; font-weight:bold;'>THE PREDATOR</p>
-                <div style='height:1px; background:rgba(255,255,255,0.1); margin:20px 0;'></div>
-            </div>
-        """, unsafe_allow_html=True)
-        pw = st.text_input("IDENTIFICATION BIOMÉTRIQUE", type="password")
-        if st.button("AUTHENTIFICATION"):
+    _, col, _ = st.columns([1, 1, 1])
+    with col:
+        st.markdown("<br><br><div style='text-align:center;'><h1 style='font-family:Orbitron; color:white; letter-spacing:10px;'>HediAyoub</h1><p style='color:red; letter-spacing:6px; font-size:12px;'>THE PREDATOR SYSTEM</p></div>", unsafe_allow_html=True)
+        pw = st.text_input("NEURAL ACCESS KEY", type="password")
+        if st.button("EXECUTE"):
             if pw == "PREDATOR2026": st.session_state.auth = True; st.rerun()
 else:
-    # 4. DASHBOARD - STRUCTURE BLACK OPS
+    # --- HEADER ---
     st.markdown("""
-        <div style='display:flex; justify-content:space-between; align-items:center;'>
-            <div style='font-family:Orbitron; font-size:18px; letter-spacing:2px;'>HediAyoub <span style='color:red;'>THE PREDATOR</span></div>
-            <div style='font-family:JetBrains Mono; font-size:10px; color:#444;'>NODE: TUNISIA_CORE_01 // SECURE_LINE_ACTIVE</div>
+        <div style='display:flex; justify-content:space-between; align-items:end;'>
+            <div>
+                <span style='font-family:Orbitron; font-size:26px; color:white;'>HediAyoub</span>
+                <span style='font-family:Orbitron; font-size:26px; color:red; margin-left:10px;'>THE PREDATOR</span>
+            </div>
+            <div style='font-family:JetBrains Mono; font-size:10px; color:#444; letter-spacing:2px;'>TOTAL_MARKET_SCANNER_V12 // ALL_ASSETS_MONITORED</div>
         </div>
+        <div style='height:1px; background:linear-gradient(90deg, #ff0000, transparent); margin:20px 0;'></div>
     """, unsafe_allow_html=True)
-    st.markdown("<div style='height:1px; background:linear-gradient(to right, red, transparent); margin:10px 0 25px 0;'></div>", unsafe_allow_html=True)
 
-    col_charts, col_execution = st.columns([2.6, 1.2])
+    # --- ALGORITHME DE SCAN GLOBAL (SMC/ICT FOCUS) ---
+    # Cette base de données simule l'analyse de tous les actifs demandés.
+    scan_results = {
+        "NASDAQ (NQ)": {"score": 94.2, "reason": "Midnight Open Rejection + FVG M15.", "entry": "24655.25", "sl": "24640.25"},
+        "S&P 500 (ES)": {"score": 88.1, "reason": "Following NQ momentum, waiting for SMT.", "entry": "5215.00", "sl": "5208.00"},
+        "EUR/USD": {"score": 97.8, "reason": "London Liquidity Sweep + Displacement.", "entry": "1.08450", "sl": "1.08380"},
+        "GBP/USD": {"score": 82.5, "reason": "Choppy price action near PDH.", "entry": "1.26550", "sl": "1.26420"},
+        "BTC/USD": {"score": 91.0, "reason": "Asia Low Sweep + Bullish OrderBlock.", "entry": "68450", "sl": "68100"},
+        "GOLD (XAU)": {"score": 75.4, "reason": "Consolidation within Equilibrium.", "entry": "2155.20", "sl": "2148.00"},
+        "USD/JPY": {"score": 85.9, "reason": "Rejection of H4 Breaker Block.", "entry": "149.200", "sl": "149.050"},
+        "AUD/USD": {"score": 79.2, "reason": "Retesting New Week Opening Gap.", "entry": "0.65400", "sl": "0.65320"},
+        "USD/CAD": {"score": 81.4, "reason": "Liquidity Grab at Daily High.", "entry": "1.35200", "sl": "1.35350"},
+        "USD/CHF": {"score": 70.8, "reason": "Low Volatility. Avoid until Killzone.", "entry": "0.88400", "sl": "0.88550"}
+    }
+    
+    # Sélection automatique de la "Proie" la plus propre (Highest Score)
+    best_pair = max(scan_results, key=lambda x: scan_results[x]['score'])
+    data = scan_results[best_pair]
 
-    with col_charts:
-        # DATA ENGINE VISUALIZATION
-        st.markdown("<div class='predator-card'>", unsafe_allow_html=True)
-        st.markdown("<p class='metric-label'>Visual Intelligence Stream</p>", unsafe_allow_html=True)
-        
-        # Grid de données en temps réel (simulées avec style)
-        m1, m2, m3 = st.columns(3)
-        with m1:
-            st.markdown("<p class='metric-label'>Volume Delta</p>", unsafe_allow_html=True)
-            st.markdown("<p class='metric-value'>+2.482</p>", unsafe_allow_html=True)
-        with m2:
-            st.markdown("<p class='metric-label'>Net Liquidity</p>", unsafe_allow_html=True)
-            st.markdown("<p class='metric-value'>24,705.50</p>", unsafe_allow_html=True)
-        with m3:
-            st.markdown("<p class='metric-label'>SMT Signal</p>", unsafe_allow_html=True)
-            st.markdown("<p class='metric-value' style='color:#00ff41;'>ALIGNED</p>", unsafe_allow_html=True)
-        
-        # Graphique de Flux Institutionnel
-        st.write("---")
-        chart_data = pd.DataFrame(np.random.randn(30, 2), columns=['Institutional', 'Retail'])
-        st.line_chart(chart_data, height=280)
-        st.markdown("</div>", unsafe_allow_html=True)
+    col_main, col_side = st.columns([2.5, 1.2])
 
-        # REPORT GENERATOR
-        if st.button("GÉNÉRER RAPPORT NEURAL"):
-            st.markdown("""
-                <div style='background:#050505; border:1px solid #111; padding:20px; font-family:JetBrains Mono; font-size:12px; color:#888;'>
-                    <span style='color:red;'>[SYSTEM_REPORT]</span> Analyse HediAyoub terminée.<br>
-                    Le prix rejette le Midnight Open. Imbalance détectée sur le carnet d'ordres NQ.<br>
-                    Confluence SMC : CHoCH M15 confirmé. Risk: Reward optimal (1:3.2).
+    with col_main:
+        # ZONE DE FOCUS (TARGET LOCKED)
+        st.markdown(f"""
+            <div class='p-card'>
+                <div class='focus-border'></div>
+                <div style='display:flex; justify-content:space-between;'>
+                    <span class='scan-text'>● NEURAL SCANNER ACTIVE</span>
+                    <span style='color:#555; font-size:10px;'>WATCHLIST_SIZE: 10 ASSETS</span>
                 </div>
-            """, unsafe_allow_html=True)
-
-    with col_execution:
-        # RISK MANAGEMENT MODULE
-        st.markdown("<div class='predator-card'>", unsafe_allow_html=True)
-        st.markdown("<p class='metric-label'>Strategic Risk Management</p>", unsafe_allow_html=True)
-        
-        balance = st.number_input("Capital ($)", value=100000, step=1000)
-        risk_pct = st.slider("Risque (%)", 0.25, 2.0, 0.5)
-        
-        st.write("---")
-        # Calculateur
-        sl_points = 15.0
-        risk_amount = balance * (risk_pct/100)
-        lots = round(risk_amount / (sl_points * 20), 2)
-        
-        st.markdown(f"""
-            <div style='background:#000; padding:15px; border:1px solid #222; border-radius:4px;'>
-                <p style='color:#555; font-size:10px; margin:0;'>LOTS CALCULÉS</p>
-                <p style='font-size:32px; font-weight:bold; color:white; margin:0;'>{lots}</p>
-                <p style='color:red; font-size:10px;'>EXPOSITION : ${risk_amount}</p>
+                <h2 style='margin:15px 0; font-family:Orbitron; color:white;'>{best_pair} <span style='color:red;'>BEST_ALPHA_SETUP</span></h2>
+                <div style='display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; margin-top:20px;'>
+                    <div><p class='label-alpha'>Neural Confluence</p><p class='value-alpha' style='color:red;'>{data['score']}%</p></div>
+                    <div><p class='label-alpha'>Setup Quality</p><p class='value-alpha'>A+ CLASS</p></div>
+                    <div><p class='label-alpha'>Killzone Status</p><p class='value-alpha'>ACTIVE</p></div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
+
+        # GRAPHIQUE DE LIQUIDITÉ
+        st.markdown("<div class='p-card' style='padding:10px;'>", unsafe_allow_html=True)
+        chart_data = pd.DataFrame(np.random.randn(50, 1), columns=['Liquidity_Flow'])
+        st.area_chart(chart_data, height=350, use_container_width=True)
+        st.markdown(f"<p style='font-family:JetBrains Mono; font-size:11px; color:#444; padding:10px;'>INSTITUTIONAL_LOG: {data['reason']}</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_side:
+        # RISK MANAGEMENT (Adapté au capital)
+        st.markdown("<div class='p-card'>", unsafe_allow_html=True)
+        st.markdown("<p class='label-alpha' style='margin-bottom:15px;'>Execution & Risk</p>", unsafe_allow_html=True)
+        
+        balance = st.number_input("ACCOUNT_BALANCE ($)", value=100000, step=1000)
+        risk_pct = st.slider("RISK_PER_TRADE (%)", 0.25, 2.0, 0.5)
+        
+        risk_money = balance * (risk_pct/100)
+        # Ratio de calcul de lots (ajustable)
+        lots = round(risk_money / 300, 2)
         
         st.markdown(f"""
-            <div style='margin-top:15px; font-family:JetBrains Mono; font-size:13px;'>
-                <span style='color:#555;'>ENTRY:</span> 24655.25<br>
-                <span style='color:#555;'>STOP:</span> <span style='color:red;'>24640.25</span><br>
-                <span style='color:#555;'>TP1:</span> 24705.00
+            <div style='background:#000; border:1px solid #111; padding:20px; margin:20px 0;'>
+                <p class='label-alpha'>Precision Lots</p>
+                <p style='font-size:42px; font-family:Orbitron; color:white; margin:0;'>{lots}</p>
+                <p style='color:red; font-size:10px; font-weight:bold;'>MAX RISK: ${risk_money}</p>
+            </div>
+            <div style='font-family:JetBrains Mono; font-size:12px;'>
+                <span style='color:#444;'>ENTRY_TARGET:</span> {data['entry']}<br>
+                <span style='color:#444;'>STOP_PROTECT:</span> <span style='color:red;'>{data['sl']}</span><br>
+                <span style='color:#444;'>RR_RATIO:</span> 1:3.2
             </div>
         """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # CHRONO ACTIF (RECODÉ)
-        st.markdown("<div class='predator-card'>", unsafe_allow_html=True)
-        st.markdown("<p class='metric-label' style='text-align:center;'>Next Setup Window</p>", unsafe_allow_html=True)
-        
-        if 'timer' not in st.session_state: st.session_state.timer = 455
-        st.session_state.timer -= 1
-        if st.session_state.timer <= 0: st.session_state.timer = 455
-        
-        m, s = divmod(st.session_state.timer, 60)
-        st.markdown(f"<p class='chrono-display'>{m:02d}:{s:02d}</p>", unsafe_allow_html=True)
-        
+        # CHRONO SANS CLIGNOTEMENT (JS)
+        st.markdown("<div class='p-card' style='text-align:center;'>", unsafe_allow_html=True)
+        st.markdown("<p class='label-alpha'>Time to Collision</p>", unsafe_allow_html=True)
+        components.html("""
+            <div id="chrono" style="color: #ff0000; font-family: 'Orbitron', sans-serif; font-size: 50px; font-weight: 700; text-shadow: 0 0 15px rgba(255,0,0,0.4); text-align:center;">00:00</div>
+            <script>
+                var sec = 285;
+                function timer(){
+                    var m = Math.floor(sec/60); var s = sec%60;
+                    document.getElementById('chrono').innerHTML = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+                    if(sec>0) sec--; else sec=285;
+                }
+                setInterval(timer, 1000);
+            </script>
+        """, height=100)
         st.markdown("</div>", unsafe_allow_html=True)
-        
-        # Auto-refresh pour le chrono
-        time.sleep(1)
-        st.rerun()
+
+    # TERMINAL LOGS
+    st.code(f"> HEDI_AYOUB_PREDATOR: 10 Assets Scan Complete. \n> TARGET_LOCKED: {best_pair} showing highest SMC confluence ({data['score']}%). \n> DATA_READY: System stable.", language="bash")
