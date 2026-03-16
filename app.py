@@ -5,15 +5,34 @@ import streamlit.components.v1 as components
 from datetime import datetime
 
 # 1. INITIALISATION
-st.set_page_config(page_title="HediAyoub - Predator V22", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="HediAyoub - Predator V23", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. CSS ULTIME (Zéro distraction, 100% Data)
+# 2. CSS ULTIME (Correction de la visibilité des inputs)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@100;400;800&display=swap');
+    
     .stApp { background-color: #000; color: #fff; font-family: 'JetBrains Mono', monospace; }
     [data-testid="stHeader"] { background: rgba(0,0,0,0); }
-    .block-container { padding: 1rem 2rem !important; }
+
+    /* --- CORRECTION VISIBILITÉ INPUTS --- */
+    /* On force le fond en blanc et le texte en noir pour les champs de saisie */
+    div[data-baseweb="input"] {
+        background-color: #ffffff !important;
+        border-radius: 4px !important;
+    }
+    input {
+        color: #000000 !important; /* Texte Noir */
+        font-weight: bold !important;
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+    /* Style du label (le titre au-dessus de la boîte) */
+    label {
+        color: #444 !important;
+        font-size: 10px !important;
+        letter-spacing: 2px !important;
+        text-transform: uppercase !important;
+    }
 
     /* News Ticker */
     .news-ticker { background: #050505; border: 1px solid #111; padding: 8px; overflow: hidden; white-space: nowrap; margin-bottom: 20px; }
@@ -24,10 +43,6 @@ st.markdown("""
     .stealth-card { background: #050505; border: 1px solid #111; border-left: 3px solid #ff0000; padding: 20px; margin-bottom: 15px; }
     .label-mini { color: #444; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
     
-    /* Inputs Custom */
-    div[data-baseweb="input"] { background-color: #000 !important; border: 1px solid #222 !important; }
-    input { color: white !important; }
-
     /* Table */
     .exec-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     .exec-table th { color: #333; text-align: left; font-size: 9px; padding: 10px; border-bottom: 1px solid #111; }
@@ -35,31 +50,29 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. AUTHENTICATION (Bypass pour ton déploiement)
+# 3. AUTH (Bypass)
 st.session_state.auth = True 
 
 # --- NEWS TICKER ---
 st.markdown("""
     <div class='news-ticker'>
         <div class='news-content'>
-            ⚡ BREAKING: NQ LIQUIDITY SWEEP DETECTED • US CPI DATA EXPECTED VOLATILITY • INSTITUTIONAL ORDER FLOW ALIGNED BULLISH • PREDATOR SYSTEM V22 ONLINE • TRADE RESPONSIBLY...
+            ⚡ BREAKING: NQ LIQUIDITY SWEEP DETECTED • US CPI DATA EXPECTED VOLATILITY • INSTITUTIONAL ORDER FLOW ALIGNED BULLISH • PREDATOR SYSTEM V23 ONLINE...
         </div>
     </div>
 """, unsafe_allow_html=True)
 
-# --- LAYOUT ---
 col_left, col_right = st.columns([2.8, 1.2])
 
 with col_right:
-    # --- MODULE DE GESTION DU COMPTE (REMIS AU CENTRE) ---
+    # --- MODULE DE GESTION DU COMPTE ---
     st.markdown("<div class='stealth-card'>", unsafe_allow_html=True)
     st.markdown("<p class='label-mini'>Account Control</p>", unsafe_allow_html=True)
     
-    # Widgets de saisie
+    # Ici les inputs seront Blanc avec texte Noir grâce au CSS ci-dessus
     account_val = st.number_input("CAPITAL ($)", value=100000, step=1000)
     risk_percent = st.slider("RISK EXPOSURE (%)", 0.1, 5.0, 1.0, step=0.1)
     
-    # Calculs dynamiques
     risk_money = account_val * (risk_percent / 100)
     lots = round(risk_money / 350, 2)
     
@@ -67,7 +80,7 @@ with col_right:
         <div style='text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid #111;'>
             <p class='label-mini'>Neural Lot Size</p>
             <p style='font-family:Orbitron; font-size:55px; color:white; margin:0;'>{lots}</p>
-            <p style='color:red; font-size:11px; font-weight:bold;'>MAX LOSS: ${risk_money:,.2f}</p>
+            <p style='color:red; font-size:11px; font-weight:bold;'>MAX RISK: ${risk_money:,.2f}</p>
         </div>
     """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -121,7 +134,7 @@ with col_left:
     c_data = pd.DataFrame(np.random.randint(10, 100, size=(20, 2)), columns=['Buys', 'Sells'])
     st.bar_chart(c_data, height=200, color=["#ff0000", "#111111"])
 
-# MATRIX
+# MATRIX GLOBAL
 st.markdown("<p class='label-mini' style='margin-top:20px;'>Global Neural Scan</p>", unsafe_allow_html=True)
 m_cols = st.columns(5)
 assets = [("NQ", 99), ("ES", 85), ("XAU", 72), ("EURUSD", 96), ("BTC", 91)]
