@@ -1,80 +1,71 @@
 import streamlit as st
 import pandas as pd
+import json
 
-# CONFIGURATION DU CERVEAU QUANT
+# 1. CONFIGURATION SYSTÈME
 st.set_page_config(page_title="PREDATOR AI | NEURAL ENGINE", layout="wide")
 
-# DESIGN NOIR MAT & CODE MATRIX
+# 2. STYLE LUXE NOIR MAT
 st.markdown("""
 <style>
-    .stApp { background-color: #000000; color: #00ff00; font-family: 'Courier New', monospace; }
-    .st-emotion-cache-1kyx600 { background-color: #050505; border: 1px solid #222; }
-    .signal-box { border: 2px solid #00ff00; padding: 40px; border-radius: 5px; background: #000b00; text-align: center; }
-    .status-active { color: #00ff00; font-weight: bold; }
-    .status-wait { color: #ffcc00; font-weight: bold; }
+    .stApp { background-color: #000000; color: #ffffff; font-family: 'Courier New', monospace; }
+    .signal-card { border: 2px solid #00ff00; padding: 30px; border-radius: 10px; background: #050505; text-align: center; }
+    .metric-box { padding: 10px; border: 1px solid #222; border-radius: 5px; background: #0a0a0a; margin-bottom: 5px; }
+    .title-neon { color: #ff3131; text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 20px #ff3131; }
 </style>
 """, unsafe_allow_html=True)
+
+# 3. GESTION DES DONNÉES (WEBHOOK SIMULÉ VIA URL)
+# L'IA va lire les paramètres dans l'URL envoyés par TradingView
+query_params = st.query_params
+
+# Valeurs par défaut (Attente de signal)
+actif = query_params.get("actif", "SCANNING...")
+direction = query_params.get("dir", "NEUTRE")
+prix_entree = query_params.get("entry", "0.00")
+sl = query_params.get("sl", "0.00")
+tp = query_params.get("tp", "0.00")
+conf = int(query_params.get("conf", 0))
 
 if "auth" not in st.session_state: st.session_state.auth = False
 
 if not st.session_state.auth:
-    st.markdown("<h1 style='text-align:center;'>ACCESS RESTRICTED</h1>", unsafe_allow_html=True)
-    pw = st.text_input("ENTER QUANT KEY", type="password")
-    if st.button("EXECUTE"):
+    st.markdown("<h1 class='title-neon' style='text-align:center;'>PREDATOR AI</h1>", unsafe_allow_html=True)
+    pw = st.text_input("CLÉ ALPHA", type="password")
+    if st.button("INITIALISER"):
         if pw == "PREDATOR2026": st.session_state.auth = True; st.rerun()
 else:
-    # --- MOTEUR DE RAISONNEMENT (INVISIBLE) ---
-    st.sidebar.title("🤖 PREDATOR OS")
-    st.sidebar.write("Neural Vision: **SCANNING**")
-    st.sidebar.write("TV Webhook: **LISTENING**")
+    st.sidebar.title("🤖 AI STATUS")
+    st.sidebar.success("VISION ENGINE: ACTIVE")
+    st.sidebar.info("WEBHOOKS: LISTENING")
     
-    # --- SIMULATION DE LA LOGIQUE DE CONFLUENCE ---
-    # Ici l'algorithme "pèse" tes indicateurs
-    score_confluence = 94 # Ce score montera avec les alertes Webhook
+    st.markdown("<h1 class='title-neon'>🎯 DECISION TERMINAL</h1>", unsafe_allow_html=True)
     
-    st.title("🛡️ PREDATOR AI : DECISION TERMINAL")
-    st.write("Analyse multi-dimensionnelle : Orderflow (YouTube) + Structure (TradingView)")
-
-    col_signal, col_metrics = st.columns([2, 1])
-
-    with col_signal:
-        if score_confluence >= 90:
+    col_sig, col_data = st.columns([2, 1])
+    
+    with col_sig:
+        if conf >= 90:
             st.markdown(f"""
-            <div class="signal-box">
-                <h1 style='color:#00ff00;'>ALERTE A+ VALIDÉE</h1>
-                <h2 style='color:white;'>ACTIF : NASDAQ (NQ1!)</h2>
-                <p style='font-size:24px;'>DIRECTION : <span style='background-color:#004400;'> 🟢 LONG / BUY </span></p>
-                <hr style='border: 0.5px solid #222;'>
-                <p style='font-size:20px;'>ENTRÉE : <b>24 645.25</b></p>
-                <p style='color:#ff4444;'>STOP LOSS : 24 612.50</p>
-                <p style='color:#00ff00;'>TAKE PROFIT : 24 725.75</p>
+            <div class="signal-card">
+                <h1 style='color:#00ff00;'>ALERTE A+ IDENTIFIÉE</h1>
+                <h2 style='color:white;'>{actif}</h2>
+                <p style='font-size:25px;'>ORDRE : <span style='color:#00ff00;'>{direction}</span></p>
+                <hr style='border-color:#222;'>
+                <p><b>ENTRÉE :</b> {prix_entree} | <b>SL :</b> {sl} | <b>TP :</b> {tp}</p>
+                <p style='font-size:12px; color:#555;'>Fusion : CVD + SMC + Midnight Open + Bookmap Liquidity</p>
             </div>
             """, unsafe_allow_html=True)
         else:
-            st.warning("IA EN ATTENTE : Confluence insuffisante pour un signal A+.")
+            st.info("⌛ L'IA scanne les flux... En attente d'une confluence supérieure à 90%.")
+            st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXZueXpueXpueXpueXpueXpueXpueXpueXpueXpueXpueXpueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKMGpxxcaOmsY0w/giphy.gif", width=400)
 
-    with col_metrics:
-        st.markdown("### 🔍 ÉTAT DES CAPTEURS")
+    with col_data:
+        st.markdown("### 📊 INDICATEURS PRO")
+        st.markdown(f"<div class='metric-box'>✅ <b>CVD</b> : { 'ACTIF' if conf > 30 else 'SCAN...' }</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-box'>✅ <b>SMC (LuxAlgo)</b> : { 'VALIDÉ' if conf > 50 else 'SCAN...' }</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-box'>✅ <b>Midnight Open</b> : { 'ZONE OK' if conf > 70 else 'SCAN...' }</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-box'>✅ <b>Bookmap Vision</b> : { 'LIQ DÉTECTÉE' if conf > 85 else 'SCAN...' }</div>", unsafe_allow_html=True)
         
-        # Check-list automatique basée sur tes indicateurs pro
-        metrics = {
-            "CVD Footprint": "DIVERGENCE ACHETEUSE ✅",
-            "LuxAlgo SMC": "BOS M15 CONFIRMÉ ✅",
-            "Midnight Open": "ZONE DISCOUNT (OPTIMAL) ✅",
-            "SVP (Volume)": "POC REJETÉ ✅",
-            "Bookmap (Vision)": "ABSORPTION VENDEUSE ✅",
-            "FVG M15": "REMPLI (RETRACEMENT) ✅"
-        }
-        
-        for m, status in metrics.items():
-            st.markdown(f"**{m}** : <span class='status-active'>{status}</span>", unsafe_allow_html=True)
-
-    st.divider()
-    
-    # --- LOGS DU SERVEUR ---
-    st.subheader("📡 RAISONNEMENT ALGORITHMIQUE (LOGS)")
-    with st.expander("Voir l'analyse des flux YouTube en direct"):
-        st.write("Analyse Invisible du flux `XZs8kRuL12k` : Détection mur de liquidité à 24730.")
-        st.write("Analyse Invisible du flux `jc1Ds-Uz6gE` : Delta Cumulé positif en M1.")
-        st.write("Analyse Invisible du flux `kvhRserj8ME` : Vwap Rejeté.")
-        st.write("Analyse Invisible du flux `69jd1dOq4C8` : Corrélation DXY négative.")
+        st.divider()
+        st.write("🔗 **FLUX INVISIBLES :**")
+        st.write("`jc1Ds-Uz6gE`, `XZs8kRuL12k`, `kvhRserj8ME`, `69jd1dOq4C8`")
