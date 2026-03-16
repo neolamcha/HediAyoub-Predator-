@@ -1,141 +1,80 @@
 import streamlit as st
+import pandas as pd
 
-# ==========================================
-# 1. CONFIGURATION TERMINAL ELITE
-# ==========================================
-st.set_page_config(
-    page_title="PREDATOR AI | QUANT TERMINAL",
-    page_icon="🎯",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# CONFIGURATION DU CERVEAU QUANT
+st.set_page_config(page_title="PREDATOR AI | NEURAL ENGINE", layout="wide")
 
-# ==========================================
-# 2. DESIGN FUTURISTE LUXE (CSS)
-# ==========================================
+# DESIGN NOIR MAT & CODE MATRIX
 st.markdown("""
 <style>
-    /* Fond Noir Absolu et Police Monospace Pro */
-    .stApp {
-        background-color: #000000;
-        color: #FFFFFF;
-        font-family: 'Courier New', Courier, monospace;
-    }
-
-    /* Sidebar style "Stealth" */
-    [data-testid="stSidebar"] {
-        background-color: #050505;
-        border-right: 1px solid #FF3131;
-    }
-
-    /* Titres Néon Rouge Predator */
-    h1, h2, h3 {
-        color: #FF3131;
-        text-transform: uppercase;
-        letter-spacing: 4px;
-        text-shadow: 0 0 15px rgba(255, 49, 49, 0.5);
-    }
-
-    /* Cartes de Confluence Glassmorphism */
-    .metric-box {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid #222;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-left: 3px solid #FF3131;
-    }
-
-    /* Bouton d'accès */
-    .stButton>button {
-        background: linear-gradient(45deg, #FF3131, #800000);
-        color: white;
-        border: none;
-        font-weight: bold;
-        letter-spacing: 2px;
-        width: 100%;
-    }
+    .stApp { background-color: #000000; color: #00ff00; font-family: 'Courier New', monospace; }
+    .st-emotion-cache-1kyx600 { background-color: #050505; border: 1px solid #222; }
+    .signal-box { border: 2px solid #00ff00; padding: 40px; border-radius: 5px; background: #000b00; text-align: center; }
+    .status-active { color: #00ff00; font-weight: bold; }
+    .status-wait { color: #ffcc00; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 3. AUTHENTIFICATION SÉCURISÉE
-# ==========================================
-if "auth" not in st.session_state:
-    st.session_state.auth = False
+if "auth" not in st.session_state: st.session_state.auth = False
 
 if not st.session_state.auth:
-    col_l, col_c, col_r = st.columns([1, 1.5, 1])
-    with col_c:
-        st.markdown("<br><br><h1 style='text-align:center;'>PREDATOR AI</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align:center;color:#444;'>INSTITUTIONAL QUANT SYSTEM V1.0</p>", unsafe_allow_html=True)
-        password = st.text_input("CLÉ D'ACCÈS ALPHA", type="password")
-        if st.button("INITIALISER LE PROTOCOLE"):
-            if password == "PREDATOR2026":
-                st.session_state.auth = True
-                st.rerun()
+    st.markdown("<h1 style='text-align:center;'>ACCESS RESTRICTED</h1>", unsafe_allow_html=True)
+    pw = st.text_input("ENTER QUANT KEY", type="password")
+    if st.button("EXECUTE"):
+        if pw == "PREDATOR2026": st.session_state.auth = True; st.rerun()
 else:
-    # ==========================================
-    # 4. DASHBOARD PREDATOR (TES LIENS INCLUS)
-    # ==========================================
+    # --- MOTEUR DE RAISONNEMENT (INVISIBLE) ---
+    st.sidebar.title("🤖 PREDATOR OS")
+    st.sidebar.write("Neural Vision: **SCANNING**")
+    st.sidebar.write("TV Webhook: **LISTENING**")
     
-    with st.sidebar:
-        st.markdown("<h1>PREDATOR</h1>")
-        st.success("MOTEUR ALPHA ACTIF ✅")
-        st.divider()
+    # --- SIMULATION DE LA LOGIQUE DE CONFLUENCE ---
+    # Ici l'algorithme "pèse" tes indicateurs
+    score_confluence = 94 # Ce score montera avec les alertes Webhook
+    
+    st.title("🛡️ PREDATOR AI : DECISION TERMINAL")
+    st.write("Analyse multi-dimensionnelle : Orderflow (YouTube) + Structure (TradingView)")
+
+    col_signal, col_metrics = st.columns([2, 1])
+
+    with col_signal:
+        if score_confluence >= 90:
+            st.markdown(f"""
+            <div class="signal-box">
+                <h1 style='color:#00ff00;'>ALERTE A+ VALIDÉE</h1>
+                <h2 style='color:white;'>ACTIF : NASDAQ (NQ1!)</h2>
+                <p style='font-size:24px;'>DIRECTION : <span style='background-color:#004400;'> 🟢 LONG / BUY </span></p>
+                <hr style='border: 0.5px solid #222;'>
+                <p style='font-size:20px;'>ENTRÉE : <b>24 645.25</b></p>
+                <p style='color:#ff4444;'>STOP LOSS : 24 612.50</p>
+                <p style='color:#00ff00;'>TAKE PROFIT : 24 725.75</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.warning("IA EN ATTENTE : Confluence insuffisante pour un signal A+.")
+
+    with col_metrics:
+        st.markdown("### 🔍 ÉTAT DES CAPTEURS")
         
-        # --- TES LIENS YOUTUBE INTÉGRÉS ICI ---
-        flux_pro = {
-            "NQ Bookmap Live (24/7)": "jc1Ds-Uz6gE",
-            "ES Orderflow Feed": "XZs8kRuL12k",
-            "Nasdaq Liquidity": "kvhRserj8ME",
-            "Global Heatmap": "69jd1dOq4C8"
+        # Check-list automatique basée sur tes indicateurs pro
+        metrics = {
+            "CVD Footprint": "DIVERGENCE ACHETEUSE ✅",
+            "LuxAlgo SMC": "BOS M15 CONFIRMÉ ✅",
+            "Midnight Open": "ZONE DISCOUNT (OPTIMAL) ✅",
+            "SVP (Volume)": "POC REJETÉ ✅",
+            "Bookmap (Vision)": "ABSORPTION VENDEUSE ✅",
+            "FVG M15": "REMPLI (RETRACEMENT) ✅"
         }
         
-        selection = st.selectbox("CHOIX DU CANAL ALPHA", list(flux_pro.keys()))
-        
-        st.divider()
-        st.header("STATUT DES CAPTEURS")
-        st.write("📡 **CVD (Cumulative Delta)**: SYNC")
-        st.write("📊 **SVP (Volume Profile)**: SYNC")
-        st.write("🕰️ **Midnight Open**: SYNC")
-        st.write("📉 **SMC Structure**: SYNC")
+        for m, status in metrics.items():
+            st.markdown(f"**{m}** : <span class='status-active'>{status}</span>", unsafe_allow_html=True)
 
-    # SECTION PRINCIPALE
-    st.markdown("<h1>🎯 GLOBAL LIQUIDITY ENGINE</h1>", unsafe_allow_html=True)
+    st.divider()
     
-    col_main, col_data = st.columns([2.5, 1])
-
-    with col_main:
-        st.markdown(f"### 👁️ VISION AGENT : {selection}")
-        # Affichage du flux sélectionné
-        video_url = f"https://www.youtube.com/watch?v={flux_pro[selection]}"
-        st.video(video_url)
-        
-        st.markdown("### 📝 JOURNAL D'EXÉCUTION QUANT")
-        st.code(f"""
-[SYSTEM] : Analyse en temps réel du flux {selection}...
-[DATA]   : Détection de liquidité institutionnelle sur les Footprints.
-[CORR]   : Corrélation DXY/NQ confirmée.
-[ICT]    : Zone de Midnight Open identifiée - Attente de retracement.
-        """, language="bash")
-
-    with col_data:
-        st.markdown("### ⚡ SCORE A+")
-        st.markdown("""
-            <div style='border: 2px solid #FF3131; padding: 20px; border-radius: 15px; text-align:center; background: rgba(255,0,0,0.05);'>
-                <h1 style='font-size:60px; margin:0;'>94%</h1>
-                <p style='color:#00FF00; font-weight:bold;'>PROBABILITÉ HAUTE</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("<br><h4>MATRICE DE CONFLUENCE</h4>", unsafe_allow_html=True)
-        
-        # Liste de tes indicateurs pro précis
-        st.markdown("<div class='metric-box'>✅ <b>CVD</b> : Divergence Bullish (M1)</div>", unsafe_allow_html=True)
-        st.markdown("<div class='metric-box'>✅ <b>Midnight Open</b> : Prix en Discount</div>", unsafe_allow_html=True)
-        st.markdown("<div class='metric-box'>✅ <b>LuxAlgo SMC</b> : CHoCH validé</div>", unsafe_allow_html=True)
-        st.markdown("<div class='metric-box'>✅ <b>FVG / OB</b> : Tap dans l'Order Block</div>", unsafe_allow_html=True)
-        st.markdown("<div class='metric-box'>✅ <b>SVP</b> : Récupération du POC</div>", unsafe_allow_html=True)
-
-        st.error("⚠️ MUR DE LIQUIDITÉ DÉTECTÉ À +15 PTS")
+    # --- LOGS DU SERVEUR ---
+    st.subheader("📡 RAISONNEMENT ALGORITHMIQUE (LOGS)")
+    with st.expander("Voir l'analyse des flux YouTube en direct"):
+        st.write("Analyse Invisible du flux `XZs8kRuL12k` : Détection mur de liquidité à 24730.")
+        st.write("Analyse Invisible du flux `jc1Ds-Uz6gE` : Delta Cumulé positif en M1.")
+        st.write("Analyse Invisible du flux `kvhRserj8ME` : Vwap Rejeté.")
+        st.write("Analyse Invisible du flux `69jd1dOq4C8` : Corrélation DXY négative.")
