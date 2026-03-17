@@ -12,28 +12,27 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 
 st.set_page_config(page_title="HEDI AYOUB PREDATOR", layout="centered")
 
-# --- DESIGN TACTIQUE V42 ---
+# --- DESIGN TACTIQUE ELITE ---
 st.markdown("""
     <style>
         header, footer, .stDeployButton, div[data-testid="stToolbar"] {visibility: hidden !important;}
         .stApp { background-color: #050505; color: white; }
         .main-title { text-align: center; letter-spacing: 12px; font-weight: 100; font-size: 30px; margin-top: 20px; }
         .sub-title { text-align: center; color: #FF3131; font-size: 10px; margin-top: -15px; letter-spacing: 3px; font-weight: bold;}
-        .res-box { background: #0a0a0a; padding: 20px; border-radius: 15px; border: 1px solid #1f1f1f; margin: 10px 0; }
-        .smt-info { background: rgba(255, 49, 49, 0.1); border-left: 3px solid #FF3131; padding: 10px; font-size: 11px; margin-bottom: 20px; border-radius: 0 10px 10px 0; }
+        .res-box { background: #0a0a0a; padding: 25px; border-radius: 15px; border: 1px solid #1f1f1f; margin: 15px 0; }
+        .smt-info { background: rgba(255, 49, 49, 0.05); border-left: 3px solid #FF3131; padding: 12px; font-size: 11px; margin-bottom: 25px; border-radius: 0 10px 10px 0; }
         
         div.stButton > button {
-            background: linear-gradient(90deg, #800000 0%, #ff0000 100%) !important;
+            background: linear-gradient(90deg, #600000 0%, #ff0000 100%) !important;
             color: white !important;
             border: none !important;
-            font-size: 18px !important;
+            font-size: 16px !important;
             font-weight: bold !important;
-            letter-spacing: 4px !important;
-            padding: 15px !important;
+            letter-spacing: 3px !important;
+            padding: 18px !important;
             border-radius: 12px !important;
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.5) !important;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3) !important;
             width: 100%;
-            transition: 0.3s;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -42,86 +41,104 @@ if 'trade_setup' not in st.session_state:
     st.session_state.trade_setup = None
 
 st.markdown("<div class='main-title'>HEDI AYOUB</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>NEURAL PREDATOR V42.0</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>INSTITUTIONAL QUANT V43.0</div>", unsafe_allow_html=True)
 
-# Configuration des actifs et de leur SMT corrélé
 assets = {
-    "BITCOIN (BTC)": {"symbol": "BTC-USD", "smt": "ETHEREUM (ETH)"},
+    "BITCOIN (BTC)": {"symbol": "BTC-USD", "smt": "ETH/BTC"},
     "NASDAQ (NQ)": {"symbol": "NQ=F", "smt": "DOW JONES (YM)"},
     "US30 (DOW)": {"symbol": "YM=F", "smt": "NASDAQ (NQ)"},
-    "GOLD (XAU)": {"symbol": "GC=F", "smt": "DXY (DOLLAR INDEX)"},
-    "EURUSD": {"symbol": "EURUSD=X", "smt": "DXY (DOLLAR INDEX)"}
+    "GOLD (XAU)": {"symbol": "GC=F", "smt": "DXY Index"},
+    "EURUSD": {"symbol": "EURUSD=X", "smt": "DXY Index"}
 }
 
 target_label = st.selectbox("ACTIF", list(assets.keys()), label_visibility="collapsed")
 current_asset = assets[target_label]
 
-# Affichage dynamique du rappel SMT et Timeframe
 st.markdown(f"""
     <div class="smt-info">
-        📌 <b>RAPPEL OPÉRATIONNEL</b><br>
-        🔄 <b>SMT :</b> Cherche la divergence avec <b>{current_asset['smt']}</b><br>
-        ⏱️ <b>TIMEFRAMES :</b> Structure en <b>15M</b> | Entrée en <b>5M</b>
+        🛡️ <b>FILTRE INSTITUTIONNEL ACTIF</b><br>
+        🔄 <b>SMT :</b> Vérification vs <b>{current_asset['smt']}</b><br>
+        ⏱️ <b>TIMEFRAMES :</b> Structure 15M | Entrée 5M
     </div>
 """, unsafe_allow_html=True)
 
-uploaded_files = st.file_uploader("CHARGE TES 6 DATASETS", accept_multiple_files=True)
+uploaded_files = st.file_uploader("CHARGE TES DATASETS SMC/ORDERFLOW", accept_multiple_files=True)
 
-def get_neural_analysis(files, asset_name, smt_asset):
+def get_pro_analysis(files, asset_name, smt_ref):
     try:
         images = [PIL.Image.open(f) for f in files]
         prompt = f"""
-        Analyse institutionnelle pour {asset_name}. 
-        Structure demandée : 15M (Trend/OB) et 5M (Entrée/CHoCH).
-        SMT : Compare avec {smt_asset} pour détecter les divergences de liquidité.
+        En tant qu'analyste senior spécialisé en SMC (Smart Money Concepts) et Order Flow.
+        Analyse {asset_name} avec corrélation {smt_ref}.
+        Considère : CHoCH, BOS, Fair Value Gaps, et Divergence SMT.
         
-        Réponds uniquement en JSON: {{"side": "BUY", "reason": "Détail technique court"}}
+        SI LE SETUP N'EST PAS CLAIR À 90%, RÉPONDS "NEUTRAL".
+        SI SETUP CLAIR, RÉPONDS EN JSON STRICT :
+        {{"side": "BUY", "reason": "...", "confidence": 95}}
+        OU
+        {{"side": "NEUTRAL", "reason": "Manque de confluence institutionnelle", "confidence": 0}}
         """
         response = model.generate_content([prompt, *images])
         clean_json = re.search(r'\{.*\}', response.text.strip(), re.DOTALL).group()
         return json.loads(clean_json)
     except:
-        return {"side": "NEUTRAL", "reason": "Analyse de structure en cours..."}
+        return {"side": "NEUTRAL", "reason": "Données incomplètes pour valider un setup.", "confidence": 0}
 
 if uploaded_files:
-    if st.button("EXECUTE NEURAL SCAN"):
-        with st.status("📡 SYNCHRONISATION NEURALE...") as status:
+    if st.button("🔥 EXECUTE NEURAL QUANT SCAN"):
+        with st.status("📡 ANALYSE DES FLUX EN COURS...") as status:
             ticker = yf.Ticker(current_asset['symbol'])
             price = ticker.history(period="1d")['Close'].iloc[-1]
             
-            verdict = get_neural_analysis(uploaded_files, target_label, current_asset['smt'])
+            verdict = get_pro_analysis(uploaded_files, target_label, current_asset['smt'])
             
-            # Logique de calcul dynamique 1:3
-            is_fx = "USD=X" in current_asset['symbol']
-            sl_dist = price * 0.0012 if is_fx else price * 0.006
-            side_mult = 1 if verdict['side'] == "BUY" else -1
+            if verdict['side'] in ["BUY", "SELL"]:
+                is_fx = "USD=X" in current_asset['symbol']
+                sl_dist = price * 0.0012 if is_fx else price * 0.006
+                side_mult = 1 if verdict['side'] == "BUY" else -1
+                
+                st.session_state.trade_setup = {
+                    "side": verdict['side'],
+                    "entry": price,
+                    "tp": price + (sl_dist * 3.5 * side_mult),
+                    "sl": price - (sl_dist * side_mult),
+                    "reason": verdict['reason'],
+                    "conf": verdict['confidence']
+                }
+            else:
+                st.session_state.trade_setup = {"side": "NEUTRAL", "reason": verdict['reason']}
             
-            st.session_state.trade_setup = {
-                "side": verdict['side'],
-                "entry": price,
-                "tp": price + (sl_dist * 3.5 * side_mult),
-                "sl": price - (sl_dist * side_mult),
-                "reason": verdict['reason']
-            }
             status.update(label="SCAN TERMINÉ", state="complete")
 
+# --- AFFICHAGE CONDITIONNEL (LE VRAI DU LOURD) ---
 if st.session_state.trade_setup:
-    t = st.session_state.trade_setup
-    color = "#00FF66" if t['side'] == "BUY" else "#FF3131"
-    fmt = ".5f" if "USD=X" in current_asset['symbol'] else ".2f"
+    res = st.session_state.trade_setup
     
-    st.markdown(f"""
-        <div class="res-box">
-            <h1 style="text-align:center; color:{color}; font-size:50px; margin:0;">{t['side']}</h1>
-            <p style="text-align:center; font-size:12px; opacity:0.8;">{t['reason']}</p>
-        </div>
-    """, unsafe_allow_html=True)
+    if res['side'] == "NEUTRAL":
+        st.markdown(f"""
+            <div class="res-box" style="border: 1px solid #333;">
+                <h2 style="text-align:center; color:#555; margin:0;">NEUTRAL ⚖️</h2>
+                <p style="text-align:center; font-size:12px; opacity:0.6; margin-top:10px;">{res['reason']}</p>
+            </div>
+        """, unsafe_allow_html=True)
+        # Ici on ne met rien d'autre. Pas de TP, pas de SL.
+    else:
+        color = "#00FF66" if res['side'] == "BUY" else "#FF3131"
+        fmt = ".5f" if "USD=X" in current_asset['symbol'] else ".2f"
+        
+        st.markdown(f"""
+            <div class="res-box">
+                <p style="text-align:center; font-size:10px; letter-spacing:2px; opacity:0.5; margin:0;">SIGNAL IDENTIFIÉ</p>
+                <h1 style="text-align:center; color:{color}; font-size:60px; margin:0;">{res['side']}</h1>
+                <p style="text-align:center; font-size:12px; opacity:0.8;">{res['reason']}</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.metric("PRIX D'ENTRÉE", f"{res['entry']:{fmt}}")
+        c1, c2 = st.columns(2)
+        c1.success(f"TARGET (TP)\n\n{res['tp']:{fmt}}")
+        c2.error(f"PROTECTION (SL)\n\n{res['sl']:{fmt}}")
     
-    st.metric("ENTRÉE LIVE", f"{t['entry']:{fmt}}")
-    c1, c2 = st.columns(2)
-    c1.success(f"TARGET (TP)\n\n{t['tp']:{fmt}}")
-    c2.error(f"PROTECTION (SL)\n\n{t['sl']:{fmt}}")
-    
-    if st.button("🔄 RESET"):
+    if st.button("🔄 RESET ENGINE"):
         st.session_state.trade_setup = None
         st.rerun()
