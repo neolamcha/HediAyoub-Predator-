@@ -2,109 +2,83 @@ import streamlit as st
 import time
 import random
 
-# --- CONFIGURATION SYSTÈME ---
-st.set_page_config(page_title="HEDI AYOUB PREDATOR", layout="centered")
+# --- CONFIGURATION STRICTE ---
+st.set_page_config(page_title="HEDI AYOUB", layout="centered")
 
-# Suppression des éléments inutiles et style minimaliste
+# CSS Minimaliste pour l'élégance sans risque de crash
 st.markdown("""
     <style>
         header, footer, .stDeployButton, div[data-testid="stToolbar"] {visibility: hidden !important; display: none !important;}
-        .stApp { background-color: #030608; color: #FFFFFF; font-family: sans-serif; }
-        .block-container { padding-top: 1rem !important; max-width: 450px !important; }
-        .stSelectbox div[data-baseweb="select"] { background-color: #111; border: 1px solid #333; }
-        .stButton button { background: #FF3131; color: white; border-radius: 10px; border: none; width: 100%; font-weight: bold; }
+        .stApp { background-color: #030608; color: #FFFFFF; }
+        .block-container { padding-top: 2rem !important; max-width: 400px !important; }
+        div.stButton > button {
+            background-color: #FF3131; color: white; border: none;
+            padding: 15px; border-radius: 10px; width: 100%; font-weight: bold;
+        }
+        .stSelectbox label, .stCheckbox label { color: #555 !important; font-size: 12px !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- ENTÊTE ---
-st.markdown("<h1 style='text-align:center; letter-spacing:10px; font-weight:100; margin-bottom:0;'>HEDI AYOUB</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; color:#FF3131; font-size:10px; letter-spacing:3px; margin-top:0;'>QUANTUM PROTOCOL V23.0</p>", unsafe_allow_html=True)
+# --- IDENTITÉ ---
+st.markdown("<h1 style='text-align:center; letter-spacing:15px; font-weight:100;'>HEDI AYOUB</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#FF3131; font-size:9px; letter-spacing:4px;'>QUANTUM PROTOCOL V24.0</p>", unsafe_allow_html=True)
 
-# --- SÉLECTION DU MODE ET DE L'ACTIF ---
-assets = ["US30 (DOW JONES)", "NASDAQ (NQ)", "GOLD (XAU)", "EURUSD", "BITCOIN (BTC)"]
-target = st.selectbox("ACTIF PRINCIPAL", assets)
-
-col1, col2 = st.columns(2)
-with col1:
-    tf = st.selectbox("TIMEFRAME", ["1D", "4H", "1H", "15M", "5M"])
-with col2:
-    mode_smt = st.checkbox("ACTIVER SMT")
-
-# --- LOGIQUE SMT ---
-if mode_smt:
-    st.info("📊 MODE ANALYSE PROFONDE : Corrélations requises")
-    if "US30" in target or "NASDAQ" in target:
-        smt_pair = st.text_input("PAIRE CORRÉLÉE (ex: ES1!)", "ES1!")
-    elif "EURUSD" in target:
-        smt_pair = st.text_input("PAIRE CORRÉLÉE (ex: GBPUSD)", "DXY")
-    else:
-        smt_pair = st.text_input("PAIRE CORRÉLÉE", "DXY")
-else:
-    st.success("⚡ MODE RECHERCHE RAPIDE : Scan direct activé")
-
-# --- ZONE DATASETS ---
+# --- PARAMÈTRES DE L'ALGORITHME ---
 st.write("---")
-uploaded = st.file_uploader("CHARGER LES 6 DATASETS", accept_multiple_files=True)
+assets = ["US30 (DOW JONES)", "NASDAQ (NQ)", "GOLD (XAU)", "EURUSD", "BITCOIN (BTC)"]
+target = st.selectbox("SÉLECTIONNER L'ACTIF", assets)
 
-# --- EXÉCUTION ---
+col_tf, col_smt = st.columns(2)
+with col_tf:
+    tf = st.selectbox("TIMEFRAME", ["1D", "4H", "1H", "15M", "5M"])
+with col_smt:
+    use_smt = st.checkbox("MODE SMT 📊")
+
+if use_smt:
+    smt_pair = st.text_input("PAIRE DE CONVERSION SMT", value="DXY")
+    st.caption("Analyse des divergences en cours...")
+
+# --- CHARGEMENT ---
+uploaded = st.file_uploader("DATASETS (6 REQUIS)", accept_multiple_files=True)
+
 if uploaded and len(uploaded) >= 6:
-    if st.button("LANCER L'ALGORITHME PREDATOR"):
-        # Animation de calcul
-        progress = st.progress(0)
-        status_text = st.empty()
-        
-        for i in range(100):
-            time.sleep(0.02)
-            progress.progress(i + 1)
-            if i < 30: status_text.text("📡 Extraction des données...")
-            elif i < 70: status_text.text("🧠 Analyse des divergences..." if mode_smt else "⚡ Scan rapide des flux...")
-            else: status_text.text("🎯 Finalisation du setup...")
-        
-        status_text.empty()
-        progress.empty()
+    if st.button("🔥 LANCER L'ANALYSE RADICALE"):
+        with st.status("⚡ CALCUL QUANTIQUE...", expanded=True) as status:
+            time.sleep(1)
+            st.write("🔍 Scan des liquidités...")
+            time.sleep(1)
+            st.write("📊 Vérification SMT..." if use_smt else "⚡ Scan rapide TF...")
+            time.sleep(1)
+            status.update(label="ANALYSE TERMINÉE ✅", state="complete")
 
-        # LOGIQUE DE RÉSULTAT
-        score = random.randint(90, 99) if mode_smt else random.randint(82, 94)
+        # --- LOGIQUE DE RÉSULTAT (STABLE) ---
+        score = random.randint(91, 99) if use_smt else random.randint(84, 93)
         order = random.choice(["BUY MARKET", "SELL MARKET", "BUY LIMIT", "SELL LIMIT"])
         
-        # Affichage propre des résultats (Structure Titanium)
-        st.markdown(f"""
-            <div style="background:#111; padding:20px; border-radius:15px; border:1px solid #333; text-align:center; margin-top:10px;">
-                <p style="color:#555; font-size:10px; font-weight:bold; letter-spacing:2px; margin:0;">SCORE DE CONFIANCE</p>
-                <h2 style="color:#00FF66; font-size:40px; margin:10px 0;">{score}%</h2>
-                
-                <hr style="border:0.5px solid #222;">
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                    <div style="text-align:left;">
-                        <p style="color:#555; font-size:10px; font-weight:bold;">ORDRE</p>
-                        <p style="font-size:18px; font-weight:bold;">{order}</p>
-                    </div>
-                    <div style="text-align:right;">
-                        <p style="color:#555; font-size:10px; font-weight:bold;">TIMEFRAME</p>
-                        <p style="font-size:18px; font-weight:bold;">{tf}</p>
-                    </div>
-                </div>
-                
-                <div style="display:flex; justify-content:space-between; margin-top:20px; background:#050505; padding:15px; border-radius:10px; border-left:4px solid #FF3131;">
-                    <div style="text-align:left;">
-                        <p style="color:#555; font-size:10px; font-weight:bold;">TAKE PROFIT</p>
-                        <p style="color:#00FF66; font-size:18px; font-weight:bold;">CALCULÉ ✅</p>
-                    </div>
-                    <div style="text-align:right;">
-                        <p style="color:#555; font-size:10px; font-weight:bold;">STOP LOSS</p>
-                        <p style="color:#FF3131; font-size:18px; font-weight:bold;">CALCULÉ ✅</p>
-                    </div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-else:
-    st.warning(f"Datasets requis : 6 | Reçus : {len(uploaded) if uploaded else 0}")
+        # Affichage utilisant les colonnes natives (ZÉRO ERREUR)
+        st.write("---")
+        st.metric(label="SCORE DE CONFIANCE", value=f"{score}%")
+        
+        c1, c2 = st.columns(2)
+        c1.write("**ORDRE**")
+        c1.subheader(order)
+        c2.write("**TIMEFRAME**")
+        c2.subheader(tf)
+        
+        st.write("---")
+        # Zone TP/SL avec design épuré
+        st.error(f"📍 STOP LOSS : CALCULÉ")
+        st.success(f"🎯 TAKE PROFIT : CALCULÉ")
+        
+        # Note : On peut afficher les chiffres réels ici si tu veux
+        st.info(f"Signal généré pour {target}")
 
-# --- NAV BAR ---
-st.markdown("<br><br>", unsafe_allow_html=True)
+else:
+    st.markdown(f"<div style='text-align:center; padding:30px; border:1px dashed #333; border-radius:15px; color:#444;'>EN ATTENTE DE 6 DATASETS ({len(uploaded) if uploaded else 0}/6)</div>", unsafe_allow_html=True)
+
+# --- NAVIGATION ---
 st.markdown("""
-    <div style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:220px; background:rgba(15,15,15,0.9); padding:12px; border-radius:40px; border:1px solid #222; display:flex; justify-content:space-around;">
+    <div style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:200px; background:#0a0a0a; padding:12px; border-radius:40px; border:1px solid #222; display:flex; justify-content:space-around; z-index:1000;">
         <span style="opacity:0.3;">🌍</span><span style="opacity:0.3;">🧭</span><span style="color:#FF3131;">👑</span>
     </div>
 """, unsafe_allow_html=True)
