@@ -20,6 +20,7 @@ st.markdown("""
         .main-title { text-align: center; letter-spacing: 12px; font-weight: 100; font-size: 30px; margin-top: 20px; }
         .res-box { background: #0a0a0a; padding: 20px; border-radius: 15px; border: 1px solid #1f1f1f; }
         .logic-badge { background: #1a1a1a; color: #FF3131; padding: 4px 10px; border-radius: 5px; font-size: 10px; font-weight: bold; }
+        .alert-box { background-color: #111; padding: 12px; border-radius: 8px; border-left: 4px solid #FF3131; margin-bottom: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -27,21 +28,37 @@ if 'trade_setup' not in st.session_state:
     st.session_state.trade_setup = None
 
 st.markdown("<div class='main-title'>HEDI AYOUB</div>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; color:#FF3131; font-size:10px; margin-top:-15px;'>IRONCLAD ENGINE V38.0</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#FF3131; font-size:10px; margin-top:-15px;'>TACTICAL HUD V39.0</p>", unsafe_allow_html=True)
 
+# 1. ACTIFS ET CORRÉLATIONS SMT
 assets = {
     "BITCOIN (BTC)": "BTC-USD",
     "NASDAQ (NQ)": "NQ=F",
     "US30 (DOW)": "YM=F",
     "GOLD (XAU)": "GC=F",
-    "EURUSD": "EURUSD=X",
-    "GBPUSD": "GBPUSD=X"
+    "EURUSD": "EURUSD=X"
+}
+
+smt_correlations = {
+    "BITCOIN (BTC)": "ETHEREUM (ETH)",
+    "NASDAQ (NQ)": "US30 ou S&P 500 (ES)",
+    "US30 (DOW)": "NASDAQ (NQ) ou S&P 500 (ES)",
+    "GOLD (XAU)": "DXY (Dollar Index) ou SILVER (XAG)",
+    "EURUSD": "DXY (Dollar Index) ou GBPUSD"
 }
 
 target_label = st.selectbox("ACTIF", list(assets.keys()), label_visibility="collapsed")
 target_symbol = assets[target_label]
 
-# SÉCURITÉ 1 : Limitation stricte des extensions de fichiers
+# 2. RAPPEL STRATÉGIQUE DYNAMIQUE
+st.markdown(f"""
+    <div class="alert-box">
+        <span style="color: #FF3131; font-weight: bold; font-size: 11px; letter-spacing: 1px;">📌 RAPPEL OPÉRATIONNEL</span><br>
+        <span style="font-size: 13px; color: #ccc;">🔄 <b>SMT :</b> Cherche la divergence avec <b>{smt_correlations[target_label]}</b></span><br>
+        <span style="font-size: 13px; color: #ccc;">⏱️ <b>TIMEFRAMES :</b> Capture en <b>15M</b> (Structure) et <b>5M</b> (Entrée)</span>
+    </div>
+""", unsafe_allow_html=True)
+
 uploaded_files = st.file_uploader("UPLOAD DATASETS", accept_multiple_files=True, type=['png', 'jpg', 'jpeg'])
 
 def get_live_liquidity_analysis(files, asset_name):
@@ -56,7 +73,6 @@ def get_live_liquidity_analysis(files, asset_name):
     """
     try:
         response = model.generate_content([prompt, *images])
-        # SÉCURITÉ 2 : Extraction Regex robuste pour ignorer le texte hors du JSON
         match = re.search(r'\{.*\}', response.text.replace('\n', ''), re.DOTALL)
         if match:
             return json.loads(match.group(0))
@@ -70,7 +86,6 @@ if uploaded_files and len(uploaded_files) >= 1:
             verdict = get_live_liquidity_analysis(uploaded_files, target_label)
             
             if verdict:
-                # SÉCURITÉ 3 : Protection contre le crash yfinance
                 try:
                     ticker = yf.Ticker(target_symbol)
                     current_p = ticker.history(period="1d")['Close'].iloc[-1]
@@ -78,7 +93,6 @@ if uploaded_files and len(uploaded_files) >= 1:
                     st.error("Flux de prix temporairement indisponible. Réessaie.")
                     st.stop()
                 
-                # SÉCURITÉ 4 : Vérification mathématique (Sanity Check)
                 is_valid_buy = verdict['side'] == "BUY" and verdict['tp_level'] > current_p > verdict['sl_level']
                 is_valid_sell = verdict['side'] == "SELL" and verdict['tp_level'] < current_p < verdict['sl_level']
                 
@@ -112,7 +126,6 @@ if st.session_state.trade_setup:
         </div>
     """, unsafe_allow_html=True)
     
-    # Formatage dynamique (5 décimales pour Forex, 2 pour Crypto/Indices)
     format_p = ".5f" if "USD=X" in target_symbol else ".2f"
     st.metric("PRIX D'ENTRÉE (MARCHÉ)", f"{res['entry']:{format_p}}")
     
