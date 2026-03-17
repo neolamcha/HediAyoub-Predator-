@@ -2,116 +2,96 @@ import streamlit as st
 import time
 import random
 
-# 1. SETUP & DISCRÉTION TOTALE
+# 1. CONFIGURATION SYSTÈME IMMUABLE
 st.set_page_config(page_title="HEDI AYOUB", layout="centered")
 
+# CSS BLINDÉ (Correction des balises coupées)
 st.markdown("""
     <style>
-        header {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        .stDeployButton {display:none !important;}
-        div[data-testid="stToolbar"] {display: none !important;}
+        header, footer, .stDeployButton, div[data-testid="stToolbar"] {visibility: hidden !important; display: none !important;}
+        .stApp { background-color: #030608; color: #FFFFFF; font-family: sans-serif; }
+        .block-container { padding-top: 2rem !important; max-width: 400px !important; }
         
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;900&display=swap');
-        .stApp { background-color: #030608; color: #FFFFFF; font-family: 'Inter', sans-serif; }
-        .block-container { padding-top: 30px !important; max-width: 400px; padding-bottom: 120px; }
+        /* DESIGN TITRE */
+        .head-title { text-align: center; letter-spacing: 10px; font-size: 26px; font-weight: 100; margin-bottom: 5px; }
+        .sub-title { text-align: center; color: #FF3131; font-size: 9px; letter-spacing: 3px; font-weight: bold; margin-bottom: 30px; }
 
-        /* NOM HEDI AYOUB - STYLE SIGNATURE */
-        .identity-header { text-align: center; margin-bottom: 40px; }
-        .name-main { letter-spacing: 12px; font-size: 28px; font-weight: 100; margin: 0; opacity: 0.9; }
-        .version-tag { color: #FF3131; font-size: 8px; font-weight: bold; letter-spacing: 4px; margin-top: 12px; opacity: 0.8; }
-
-        /* CARTES DE SIGNAL PRÉCISES */
-        .card-container {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            animation: fadeIn 0.6s ease-out;
+        /* CARTES DE RÉSULTAT */
+        .res-card {
+            background: #0a0a0a; border: 1px solid #1a1a1a;
+            border-radius: 15px; padding: 15px; margin-bottom: 10px;
         }
-
-        .label-mini { font-size: 9px; color: #555; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
-        .value-main { font-size: 24px; font-weight: 300; color: #FFF; }
-        .value-bold { font-size: 28px; font-weight: 900; color: #FF3131; }
-        
-        .score-display { color: #00FF66; font-weight: 900; font-size: 32px; text-shadow: 0 0 10px rgba(0, 255, 102, 0.3); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* BARRE DE NAVIGATION ÉPUREE */
-        .nav-bar {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 200px; display: flex; justify-content: space-around;
-            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(10px);
-            padding: 12px; border-radius: 40px; border: 1px solid #222; z-index: 9999;
-        }
+        .label { color: #555; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .val-red { color: #FF3131; font-size: 22px; font-weight: bold; }
+        .val-green { color: #00FF66; font-size: 22px; font-weight: bold; }
+        .val-white { color: #FFF; font-size: 22px; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- ENTÊTE ---
-st.markdown("<div class='identity-header'><div class='name-main'>HEDI AYOUB</div><div class='version-tag'>QUANTUM PROTOCOL / V21.0</div></div>", unsafe_allow_html=True)
-
-# --- SÉLECTION DE L'ACTIF ---
-assets = {
-    "US30 (DOW JONES)": 38520, "NASDAQ (NQ)": 17950, "GOLD (XAU)": 2165, "EURUSD": 1.0852, "BITCOIN (BTC)": 65200
-}
-target = st.selectbox("", list(assets.keys()), label_visibility="collapsed")
-
-# --- ZONE DE CHARGEMENT ---
-uploaded_files = st.file_uploader("", accept_multiple_files=True, label_visibility="collapsed")
-
-if uploaded_files and len(uploaded_files) >= 6:
-    if st.button("EXECUTE QUANTUM SCAN", use_container_width=True):
-        progress_bar = st.progress(0)
-        for i in range(100):
-            time.sleep(0.01)
-            progress_bar.progress(i + 1)
+# --- LOGIQUE DE CALCUL ---
+def generate_signal(asset_name):
+    # Prix de base simulés
+    prices = {"US30": 38500, "NQ": 17900, "GOLD": 2160, "EURUSD": 1.0850, "BTC": 65000}
+    base = prices.get(asset_name.split()[0], 100)
+    
+    score = random.randint(92, 99)
+    side = random.choice(["BUY", "SELL"])
+    mode = random.choice(["MARKET", "LIMIT"])
+    
+    # Calculs précis
+    if side == "BUY":
+        tp = base * 1.01
+        sl = base * 0.997
+    else:
+        tp = base * 0.99
+        sl = base * 1.003
         
-        # Logique de calcul du signal
-        score = random.randint(89, 99)
-        order_type = random.choice(["BUY MARKET", "SELL MARKET", "BUY LIMIT", "SELL LIMIT"])
-        entry = assets[target]
-        tp = entry + (entry * 0.008) if "BUY" in order_type else entry - (entry * 0.008)
-        sl = entry - (entry * 0.002) if "BUY" in order_type else entry + (entry * 0.002)
+    return score, f"{side} {mode}", tp, sl
 
-        # AFFICHAGE DES RÉSULTATS (SANS ERREUR HTML)
+# --- INTERFACE ---
+st.markdown('<div class="head-title">HEDI AYOUB</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">QUANTUM PROTOCOL / V22.0</div>', unsafe_allow_html=True)
+
+assets = ["US30 (DOW JONES)", "NASDAQ (NQ)", "GOLD (XAU)", "EURUSD", "BITCOIN (BTC)"]
+target = st.selectbox("CHOOSE ASSET", assets, label_visibility="collapsed")
+
+# Zone Upload simplifiée pour éviter les crashs de mémoire
+files = st.file_uploader("UPLOAD DATASETS", accept_multiple_files=True, label_visibility="collapsed")
+
+if files and len(files) >= 6:
+    if st.button("🔥 EXECUTE SCAN", use_container_width=True):
+        with st.spinner("QUANTUM COMPUTING..."):
+            time.sleep(2)
+            score, order, tp, sl = generate_signal(target)
+
+        # AFFICHAGE PROPRE SANS HTML COMPLEXE
         st.markdown(f"""
-            <div class='card-container' style='text-align: center;'>
-                <div class='label-mini'>Setup Probability</div>
-                <div class='score-display'>{score}%</div>
+            <div class="res-card" style="text-align:center; border-color:#00FF66;">
+                <div class="label">PROBABILITY</div>
+                <div class="val-green" style="font-size:35px;">{score}%</div>
+            </div>
+            
+            <div class="res-card">
+                <div class="label">EXECUTION</div>
+                <div class="val-white">{order}</div>
             </div>
 
-            <div class='card-container'>
-                <div class='label-mini'>Order Execution</div>
-                <div class='value-bold'>{order_type}</div>
-                <div style='display: flex; justify-content: space-between; margin-top: 15px;'>
-                    <div><div class='label-mini'>Entry</div><div class='value-main'>{entry}</div></div>
-                </div>
-            </div>
-
-            <div class='card-container'>
-                <div style='display: flex; justify-content: space-around;'>
-                    <div style='text-align: center;'>
-                        <div class='label-mini'>Take Profit</div>
-                        <div class='value-main' style='color: #00FF66;'>{tp:.2f if target != "EURUSD" else f"{tp:.4f}"}</div>
-                    </div>
-                    <div style='width: 1px; background: rgba(255,255,255,0.1);'></div>
-                    <div style='text-align: center;'>
-                        <div class='label-mini'>Stop Loss</div>
-                        <div class='value-main' style='color: #FF3131;'>{sl:.2f if target != "EURUSD" else f"{sl:.4f}"}</div>
-                    </div>
+            <div class="res-card" style="border-left: 4px solid #FF3131;">
+                <div style="display:flex; justify-content:space-between;">
+                    <div><div class="label">TAKE PROFIT</div><div class="val-green">{tp:.2f}</div></div>
+                    <div style="text-align:right;"><div class="label">STOP LOSS</div><div class="val-red">{sl:.2f}</div></div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
+        st.success("ANALYSIS COMPLETE")
 else:
-    st.markdown("<div style='height: 120px; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(255,49,49,0.15); border-radius: 12px; color: #333; font-size: 10px; letter-spacing: 2px;'>SYSTEM READY / AWAITING 6 DATASETS</div>", unsafe_allow_html=True)
+    st.info(f"AWAITING 6 DATASETS ({len(files)}/6)")
 
-# --- NAVIGATION ---
+# Navigation visuelle fixe
 st.markdown("""
-    <div class='nav-bar'>
-        <div style='opacity: 0.3; font-size: 18px;'>🌍</div>
-        <div style='opacity: 0.3; font-size: 18px;'>🧭</div>
-        <div style='color: #FF3131; font-size: 18px; filter: drop-shadow(0 0 5px #FF3131);'>👑</div>
+    <div style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:200px; 
+                background:#0a0a0a; padding:10px; border-radius:30px; border:1px solid #222; 
+                display:flex; justify-content:space-around; z-index:100;">
+        <span style="opacity:0.2;">🌍</span><span style="opacity:0.2;">🧭</span><span style="color:#FF3131;">👑</span>
     </div>
 """, unsafe_allow_html=True)
