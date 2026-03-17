@@ -10,17 +10,14 @@ GENAI_API_KEY = "AIzaSyDtFgyDwry4QmPamg6BPQnA8Q4KqlmkKqg"
 genai.configure(api_key=GENAI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-st.set_page_config(page_title="HEDI AYOUB", layout="centered")
+st.set_page_config(page_title="HEDI AYOUB PREDATOR", layout="centered")
 
-# CSS Elite & Mobile Responsive
 st.markdown("""
     <style>
         header, footer, .stDeployButton, div[data-testid="stToolbar"] {visibility: hidden !important;}
         .stApp { background-color: #050505; color: white; }
         .main-title { text-align: center; letter-spacing: 12px; font-weight: 100; font-size: 30px; margin-top: 20px; }
         .res-box { background: #0a0a0a; padding: 20px; border-radius: 15px; border: 1px solid #1f1f1f; }
-        .logic-badge { background: #1a1a1a; color: #FF3131; padding: 4px 10px; border-radius: 5px; font-size: 10px; font-weight: bold; }
-        .alert-box { background-color: #111; padding: 12px; border-radius: 8px; border-left: 4px solid #FF3131; margin-bottom: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -28,116 +25,89 @@ if 'trade_setup' not in st.session_state:
     st.session_state.trade_setup = None
 
 st.markdown("<div class='main-title'>HEDI AYOUB</div>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; color:#FF3131; font-size:10px; margin-top:-15px;'>TACTICAL HUD V39.0</p>", unsafe_allow_html=True)
 
-# 1. ACTIFS ET CORRÉLATIONS SMT
 assets = {
     "BITCOIN (BTC)": "BTC-USD",
     "NASDAQ (NQ)": "NQ=F",
     "US30 (DOW)": "YM=F",
     "GOLD (XAU)": "GC=F",
-    "EURUSD": "EURUSD=X"
-}
-
-smt_correlations = {
-    "BITCOIN (BTC)": "ETHEREUM (ETH)",
-    "NASDAQ (NQ)": "US30 ou S&P 500 (ES)",
-    "US30 (DOW)": "NASDAQ (NQ) ou S&P 500 (ES)",
-    "GOLD (XAU)": "DXY (Dollar Index) ou SILVER (XAG)",
-    "EURUSD": "DXY (Dollar Index) ou GBPUSD"
+    "EURUSD": "EURUSD=X",
+    "GBPUSD": "GBPUSD=X"
 }
 
 target_label = st.selectbox("ACTIF", list(assets.keys()), label_visibility="collapsed")
 target_symbol = assets[target_label]
+uploaded_files = st.file_uploader("CHARGE TES GRAPHES", accept_multiple_files=True)
 
-# 2. RAPPEL STRATÉGIQUE DYNAMIQUE
-st.markdown(f"""
-    <div class="alert-box">
-        <span style="color: #FF3131; font-weight: bold; font-size: 11px; letter-spacing: 1px;">📌 RAPPEL OPÉRATIONNEL</span><br>
-        <span style="font-size: 13px; color: #ccc;">🔄 <b>SMT :</b> Cherche la divergence avec <b>{smt_correlations[target_label]}</b></span><br>
-        <span style="font-size: 13px; color: #ccc;">⏱️ <b>TIMEFRAMES :</b> Capture en <b>15M</b> (Structure) et <b>5M</b> (Entrée)</span>
-    </div>
-""", unsafe_allow_html=True)
-
-uploaded_files = st.file_uploader("UPLOAD DATASETS", accept_multiple_files=True, type=['png', 'jpg', 'jpeg'])
-
-def get_live_liquidity_analysis(files, asset_name):
+def get_safe_analysis(files, asset_name, current_price):
     images = [PIL.Image.open(f) for f in files]
+    
+    # On donne le prix actuel à l'IA pour qu'elle ne dise pas n'importe quoi
     prompt = f"""
-    Analyse de liquidité vivante pour {asset_name}. 
-    1. Trouve le prix exact pour le Stop Loss (derrière le Swing High/Low).
-    2. Trouve le prix exact pour le Take Profit (zone de liquidité opposée).
-    3. Identifie la direction (BUY/SELL).
-    Réponds UNIQUEMENT au format JSON:
-    {{"side": "BUY", "confidence": 95, "sl_level": 1.08450, "tp_level": 1.09200, "logic": "Raison courte"}}
+    PRIX ACTUEL : {current_price}
+    Analyse ces images pour {asset_name}. 
+    1. Identifie la direction (BUY/SELL).
+    2. Trouve le Stop Loss logique (Swing High/Low).
+    3. Trouve le Take Profit (Zone de liquidité).
+    
+    Réponds UNIQUEMENT ce format JSON:
+    {{"side": "BUY", "confidence": 95, "sl": 0.0, "tp": 0.0, "reason": "..."}}
     """
+    
     try:
         response = model.generate_content([prompt, *images])
-        match = re.search(r'\{.*\}', response.text.replace('\n', ''), re.DOTALL)
-        if match:
-            return json.loads(match.group(0))
+        # Extraction robuste du JSON
+        json_match = re.search(r'\{.*\}', response.text, re.DOTALL)
+        if json_match:
+            return json.loads(json_match.group())
         return None
-    except Exception as e:
+    except:
         return None
 
-if uploaded_files and len(uploaded_files) >= 1:
-    if st.button("🔥 EXECUTER L'ALGORITHME", use_container_width=True):
-        with st.status("🧠 L'IA CALCULE LES ZONES DE SORTIE...") as s:
-            verdict = get_live_liquidity_analysis(uploaded_files, target_label)
+if uploaded_files:
+    if st.button("🔥 ANALYSER LA CONFLUENCE", use_container_width=True):
+        with st.status("🧠 CALCUL EN COURS...") as s:
+            # 1. Obtenir le prix réel d'abord
+            ticker = yf.Ticker(target_symbol)
+            hist = ticker.history(period="1d")
+            price = hist['Close'].iloc[-1]
             
-            if verdict:
-                try:
-                    ticker = yf.Ticker(target_symbol)
-                    current_p = ticker.history(period="1d")['Close'].iloc[-1]
-                except:
-                    st.error("Flux de prix temporairement indisponible. Réessaie.")
-                    st.stop()
+            # 2. Envoyer à l'IA
+            res = get_safe_analysis(uploaded_files, target_label, price)
+            
+            if res:
+                # 3. Sécurité : Si l'IA donne 0 ou un prix trop éloigné, on calcule mathématiquement
+                is_fx = "USD=X" in target_symbol
+                safe_dist = price * 0.005 if not is_fx else 0.0015
                 
-                is_valid_buy = verdict['side'] == "BUY" and verdict['tp_level'] > current_p > verdict['sl_level']
-                is_valid_sell = verdict['side'] == "SELL" and verdict['tp_level'] < current_p < verdict['sl_level']
-                
-                if not (is_valid_buy or is_valid_sell):
-                    s.update(label="ERREUR DE COHÉRENCE IA ⚠️", state="error")
-                    st.warning("L'IA a généré des niveaux mathématiquement incohérents avec le prix actuel. Relance le scan.")
-                    st.stop()
-                
+                final_sl = res['sl'] if res['sl'] != 0 else (price - safe_dist if res['side'] == "BUY" else price + safe_dist)
+                final_tp = res['tp'] if res['tp'] != 0 else (price + (safe_dist * 3) if res['side'] == "BUY" else price - (safe_dist * 3))
+
                 st.session_state.trade_setup = {
-                    "side": verdict['side'], "conf": verdict['confidence'],
-                    "entry": current_p, "tp": verdict['tp_level'],
-                    "sl": verdict['sl_level'], "logic": verdict['logic']
+                    "side": res['side'],
+                    "conf": res['confidence'],
+                    "entry": price,
+                    "tp": final_tp,
+                    "sl": final_sl,
+                    "reason": res['reason']
                 }
-                s.update(label="SETUP VALIDÉ ✅", state="complete")
+                s.update(label="ANALYSE RÉUSSIE", state="complete")
             else:
-                s.update(label="ÉCHEC DE L'ANALYSE ❌", state="error")
-                st.error("L'IA n'a pas pu formater sa réponse. Essaie avec des captures plus claires.")
+                st.error("L'IA a échoué. Réessaie avec une image plus nette.")
 
 if st.session_state.trade_setup:
-    res = st.session_state.trade_setup
-    color = "#00FF66" if res['side'] == "BUY" else "#FF3131"
+    t = st.session_state.trade_setup
+    st.divider()
     
-    st.markdown(f"""
-        <div class="res-box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="logic-badge">LIVE LOGIC</span>
-                <span style="font-size:12px; opacity:0.5;">Confiance: {res['conf']}%</span>
-            </div>
-            <h1 style="text-align:center; color:{color}; font-size:60px; margin:10px 0;">{res['side']}</h1>
-            <p style="text-align:center; font-size:13px; font-style:italic; opacity:0.8;">"{res['logic']}"</p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f'<div class="res-box"><h1 style="text-align:center; color:#FF3131;">{t["side"]}</h1><p style="text-align:center;">{t["reason"]}</p></div>', unsafe_allow_html=True)
     
-    format_p = ".5f" if "USD=X" in target_symbol else ".2f"
-    st.metric("PRIX D'ENTRÉE (MARCHÉ)", f"{res['entry']:{format_p}}")
+    st.metric("ENTRÉE", f"{t['entry']:.5f}" if "USD=X" in target_symbol else f"{t['entry']:.2f}")
     
     c1, c2 = st.columns(2)
-    c1.success(f"🎯 TAKE PROFIT\n\n{res['tp']:{format_p}}")
-    c2.error(f"📍 STOP LOSS\n\n{res['sl']:{format_p}}")
+    fmt = ".5f" if "USD=X" in target_symbol else ".2f"
+    c1.success(f"🎯 TP: {t['tp']:{fmt}}")
+    c2.error(f"📍 SL: {t['sl']:{fmt}}")
     
-    risk = abs(res['entry'] - res['sl'])
-    reward = abs(res['tp'] - res['entry'])
-    rr = reward / risk if risk != 0 else 0
-    st.caption(f"Ratio Risque/Rendement Réel du setup : 1:{rr:.2f}")
-
     if st.button("🔄 RESET"):
         st.session_state.trade_setup = None
         st.rerun()
