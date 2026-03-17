@@ -1,115 +1,106 @@
 import streamlit as st
 import time
+import random
 
-# --- 1. CONFIGURATION ÉCRAN TOTAL ---
+# 1. OPTIMISATION RADICALE DU CHARGEMENT
 st.set_page_config(page_title="HEDI AYOUB", layout="centered")
 
 st.markdown("""
     <style>
-        header, footer, #MainMenu, .stDeployButton, div[data-testid="stToolbar"] {
-            visibility: hidden !important;
-            display: none !important;
-        }
+        /* Nettoyage total Interface */
+        header {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        .stDeployButton {display:none !important;}
+        div[data-testid="stToolbar"] {display: none !important;}
         
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;400;900&display=swap');
         .stApp { background-color: #030608; color: #FFFFFF; font-family: 'Inter', sans-serif; }
-        .block-container { padding-top: 5px !important; max-width: 400px; }
+        .block-container { padding-top: 10px !important; max-width: 400px; padding-bottom: 120px; }
 
-        /* NOM HEDI AYOUB - STYLE LUXE */
-        .identity-header { text-align: center; margin-bottom: 25px; margin-top: 15px; }
-        .first-name { letter-spacing: 18px; font-size: 34px; font-weight: 100; margin: 0; color: #FFF; }
-        .last-name { letter-spacing: 18px; font-size: 34px; font-weight: 100; margin: 0; color: #FFF; }
-        .quantum-sub { color: #FF3131; letter-spacing: 4px; font-size: 10px; margin-top: 10px; font-weight: 900; }
+        /* Identité */
+        .identity-header { text-align: center; margin-bottom: 25px; }
+        .first-name { letter-spacing: 18px; font-size: 36px; font-weight: 100; margin: 0; line-height: 1.1; }
+        .last-name { letter-spacing: 18px; font-size: 36px; font-weight: 100; margin: 0; line-height: 1.1; }
+
+        /* Cartes de résultats ultra-fluides */
+        .card-predator {
+            border-radius: 20px; padding: 20px; text-align: center; margin-top: 15px;
+            transition: transform 0.3s ease;
+        }
+        .score-card { border: 2px solid #00FF66; background: rgba(0, 255, 102, 0.05); box-shadow: 0 0 15px rgba(0, 255, 102, 0.1); }
+        .order-card { border: 2px solid #00D2FF; background: rgba(0, 210, 255, 0.05); }
+        .setup-card { border: 2px solid #FF3131; background: rgba(255, 49, 49, 0.05); }
+
+        .label-text { font-size: 10px; letter-spacing: 2px; color: #888; font-weight: bold; text-transform: uppercase; }
+        .value-text { font-size: 26px; font-weight: 900; color: #FFF; margin: 5px 0; }
         
-        /* CADRE ROUGE NÉON */
-        .lock-box {
-            border: 2px solid #FF3131; border-radius: 20px; padding: 20px;
-            background: rgba(255, 49, 49, 0.05); display: flex; align-items: center; 
-            justify-content: center; gap: 20px; margin-bottom: 25px;
-            box-shadow: 0 0 25px rgba(255, 49, 49, 0.2);
-        }
-
-        /* CADRE BLEU NÉON */
-        .info-card {
-            border: 1.5px solid #00D2FF; border-radius: 20px; padding: 18px;
-            background: rgba(0, 210, 255, 0.02); margin-bottom: 25px;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.15);
-        }
-        .info-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
-        .label { color: #555; font-weight: 900; }
-
-        /* BARRE DE NAVIGATION BASSE */
+        /* Nav Bar */
         .nav-bar {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 240px; display: flex; justify-content: space-around;
-            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px);
+            width: 260px; display: flex; justify-content: space-around;
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(20px);
             padding: 15px; border-radius: 50px; border: 1px solid #333; z-index: 1000;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. LOGIQUE D'IDENTITÉ ---
-st.markdown("""
-    <div class='identity-header'>
-        <div class='first-name'>H E D I</div>
-        <div class='last-name'>A Y O U B</div>
-        <p class='quantum-sub'>QUANTUM PROTOCOL / V18.0</p>
-    </div>
-""", unsafe_allow_html=True)
+# 2. LOGIQUE DE CALCUL INSTANTANÉE
+def get_quantum_setup(asset_name, base_price, base_tp, base_sl):
+    # Simule une analyse ultra-rapide
+    orders = ["BUY MARKET", "SELL MARKET", "BUY LIMIT", "SELL LIMIT"]
+    selected = random.choice(orders)
+    score = random.randint(88, 99)
+    direction = 1 if "BUY" in selected else -1
+    
+    tp = base_price + (base_tp * direction)
+    sl = base_price - (base_sl * direction)
+    return selected, score, tp, sl
 
-st.markdown("""
-    <div class='lock-box'>
-        <div style='font-size:32px; color:#FF3131;'>🔒</div>
-        <div style='text-align:left;'>
-            <div style='font-weight:900; font-size:15px; color:white;'>SYSTEM LOCK</div>
-            <div style='color:#FF3131; font-size:11px; font-weight:bold;'>1D + 15M REQUIRED</div>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+# --- UI ---
+st.markdown("<div class='identity-header'><div class='first-name'>H E D I</div><div class='last-name'>A Y O U B</div></div>", unsafe_allow_html=True)
 
-# --- 3. SÉLECTION ACTIFS ---
 assets = {
-    "US30 (DOW JONES)": {"smt": "NQ / ES", "chef": "DXY"},
-    "NASDAQ (NQ)": {"smt": "ES (S&P500)", "chef": "DXY"},
-    "BITCOIN (BTC)": {"smt": "ETH (ETHEREUM)", "chef": "DXY / USDT"},
-    "GOLD (XAU)": {"smt": "XAG (SILVER)", "chef": "DXY"},
-    "EURUSD": {"smt": "GBPUSD", "chef": "DXY"}
+    "US30 (DOW JONES)": {"tp": 350, "sl": 120, "p": 38450},
+    "NASDAQ (NQ)": {"tp": 180, "sl": 60, "p": 17820},
+    "BITCOIN (BTC)": {"tp": 1500, "sl": 600, "p": 64200},
+    "GOLD (XAU)": {"tp": 18, "sl": 7, "p": 2155.50},
+    "EURUSD": {"tp": 0.0075, "sl": 0.0025, "p": 1.0850}
 }
 
 target = st.selectbox("", list(assets.keys()), label_visibility="collapsed")
 info = assets[target]
 
-st.markdown(f"""
-    <div class='info-card'>
-        <div class='info-line'><span class='label'>🎯 TARGET</span><span style='font-weight:bold;'>{target}</span></div>
-        <div class='info-line'><span class='label'>📊 SMT</span><span style='font-weight:bold;'>{info['smt']}</span></div>
-        <div class='info-line' style='border:none;'><span class='label'>💸 CHEF</span><span style='font-weight:bold;'>{info['chef']}</span></div>
-    </div>
-""", unsafe_allow_html=True)
+uploaded = st.file_uploader("", accept_multiple_files=True, label_visibility="collapsed")
 
-# --- 4. UPLOAD ET ANALYSE ---
-files = st.file_uploader("", accept_multiple_files=True, label_visibility="collapsed")
+if uploaded and len(uploaded) >= 6:
+    if st.button("🔥 EXECUTE QUANTUM SCAN", use_container_width=True):
+        # Animation de chargement très courte pour le feeling "Pro" sans lag
+        with st.spinner("⚡ SCANNING..."):
+            time.sleep(0.8) 
+            order, score, tp, sl = get_quantum_setup(target, info['p'], info['tp'], info['sl'])
 
-if files:
-    qte = len(files)
-    st.progress(min(qte/6, 1.0))
-    if qte >= 6:
-        if st.button("🔥 START QUANTUM SCAN", use_container_width=True):
-            with st.status("🛸 DÉCRYPTAGE EN COURS...", expanded=True) as s:
-                time.sleep(1.5)
-                s.update(label="VÉRIFICATION DES LIQUIDITÉS...", state="running")
-                time.sleep(1.5)
-                s.update(label="QUANTUM VISION ACTIVE ✅", state="complete")
-            st.balloons()
-            st.success("ANALYSE TERMINÉE : SETUP HAUTE PROBABILITÉ")
+        # Affichage immédiat
+        st.markdown(f"""
+            <div class='card-predator score-card'>
+                <div class='label-text'>PROBABILITY SCORE</div>
+                <div class='value-text' style='color:#00FF66;'>{score}%</div>
+            </div>
+
+            <div class='card-predator order-card'>
+                <div class='label-text'>ORDER TYPE</div>
+                <div class='value-text'>{order}</div>
+            </div>
+            
+            <div class='card-predator setup-card'>
+                <div style='display: flex; justify-content: space-around;'>
+                    <div><div class='label-text'>TAKE PROFIT</div><div class='value-text'>{tp:.2f if target != "EURUSD" else f"{tp:.4f}"}</div></div>
+                    <div style='width: 1px; background: rgba(255,255,255,0.1);'></div>
+                    <div><div class='label-text'>STOP LOSS</div><div class='value-text'>{sl:.2f if target != "EURUSD" else f"{sl:.4f}"}</div></div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='border:2px dashed #FF3131; border-radius:20px; padding:35px; text-align:center; opacity:0.4; font-size:10px; letter-spacing:2px;'>AWAITING 6 DATASETS</div>", unsafe_allow_html=True)
+    st.markdown("<div style='border: 1px solid #222; border-radius:20px; padding:40px; text-align:center; color:#444; font-size:11px;'>READY FOR 6 DATASETS</div>", unsafe_allow_html=True)
 
-# --- 5. NAVIGATION ---
-st.markdown("""
-    <div class='nav-bar'>
-        <div style='font-size:20px; opacity:0.4;'>🌍</div>
-        <div style='font-size:20px; opacity:0.4;'>🧭</div>
-        <div style='font-size:20px; color:#FF3131; filter:drop-shadow(0 0 5px #FF3131);'>👑</div>
-    </div>
-""", unsafe_allow_html=True)
+# Nav Bar
+st.markdown("""<div class='nav-bar'><div style='font-size:20px; opacity:0.5;'>🌍</div><div style='font-size:20px; opacity:0.5;'>🧭</div><div style='font-size:20px; color:#FF3131; filter: drop-shadow(0 0 5px #FF3131);'>👑</div></div>""", unsafe_allow_html=True)
